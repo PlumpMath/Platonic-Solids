@@ -12,7 +12,7 @@ var rotation_matrix=new THREE.Matrix4();    // for rotating the geometry
 var SENSITIVITY=0.005;                      // change this to adjust dragging sensitivity
 var MAX_SPEED=25;                           // change this to adjust speed of zoom-in/out
 var RADIUS=100;
-var MAX_VERTICES=32;
+var MAX_VERTICES=64;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
 init();
@@ -89,7 +89,7 @@ function init_platonic(){
             );
         else
             platonic.geometry.vertices.push( 
-                new THREE.Vector3( -1000, -1000, -1000 )
+                new THREE.Vector3( rand(), rand(), rand() )
             );
     }
         //for (var i=2; i<MAX_VERTICES; i++)
@@ -110,12 +110,15 @@ function add_vertex(){
 function remove_vertex(){   
     if (SHOWN_VERTICES>MIN_VERTICES){
         SHOWN_VERTICES--;
-        platonic.geometry.vertices[SHOWN_VERTICES].x=-1000,
-        platonic.geometry.vertices[SHOWN_VERTICES].y=-1000,
-        platonic.geometry.vertices[SHOWN_VERTICES].z=-1000;
+        platonic.geometry.vertices[SHOWN_VERTICES].x=rand(),
+        platonic.geometry.vertices[SHOWN_VERTICES].y=rand(),
+        platonic.geometry.vertices[SHOWN_VERTICES].z=rand();
+        console.log( platonic.geometry.vertices[SHOWN_VERTICES] );
     }
 }
-
+function rand(){
+    return Math.random()*800-400;
+}
 
 
 
