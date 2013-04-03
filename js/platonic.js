@@ -102,7 +102,7 @@ function update_position(vertex, index){
 }
 function add_vertex(){
     if (SHOWN_VERTICES<MAX_VERTICES){
-        platonic.geometry.vertices[SHOWN_VERTICES].spherical(0,0);
+        platonic.geometry.vertices[SHOWN_VERTICES].spherical(90, Math.random()*360-180);
         SHOWN_VERTICES++;
     }
 }
