@@ -35,7 +35,7 @@ function init(){
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
     sphere = new THREE.Mesh( new THREE.SphereGeometry(
-            RADIUS,                                                  // radius
+            RADIUS*.95,                                                  // radius
             20,                                                      // # of segments along width
             20                                                       // # of segments along height
         ), new THREE.MeshBasicMaterial({                             // fill in the sphere with a material
