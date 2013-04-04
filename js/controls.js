@@ -114,3 +114,16 @@ function on_key_up(event){
             break;
     }
 }
+$( function(){
+  $("#slide-control")
+    .bind("slider:ready slider:changed", function (event, data) {
+        if (data.value > SHOWN_VERTICES)
+            add_vertex();
+        else if (data.value < SHOWN_VERTICES)
+            remove_vertex();
+        console.log( SHOWN_VERTICES );
+    }).simpleSlider("setValue", 3); 
+ });
+    
+    
+    

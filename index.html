@@ -2,6 +2,7 @@
 <html> 
     <head> 
         <title>Platonic Transformations</title>
+        <link rel="stylesheet" type="text/css" href="css/simple-slider.css">
         <style>
             canvas { 
                 width: 100%; 
@@ -9,6 +10,7 @@
             }
             body{
                 overflow: hidden;
+                font-family: sans-serif;
             }
             .style_dark{
                 background: #000;
@@ -16,13 +18,29 @@
             .style_light{
                 background: #fff;
             }
+            #slider {
+                position: absolute;
+                border-radius: 15px;
+                background: rgba( 255, 255, 255, 0.5 );
+                bottom: 2.5%;
+                right: 20px;
+                width: 50%;
+            }
+            h3{
+                display: inline;
+                width: 5%;
+                float: left;
+            }
         </style> 
     </head> 
     <body class="style_dark"> 
+        <script src="js/jquery-1.9.1.min.js"></script>
+        <script src="js/simple-slider.min.js"></script>
         <script src="js/three.min.js"></script>
         <script src="js/mouse.js"></script> 
         <script src="js/controls.js"></script>
         <script src="js/spherical.js"></script> 
         <script src="js/platonic.js"></script> 
+        <div id="slider"><input type="text" data-slider-snap="true" data-slider-step="1" data-slider-range="3,20" id="slide-control" data-slider="true" ></div>
     </body> 
 </html>
