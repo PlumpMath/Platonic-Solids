@@ -55,7 +55,6 @@ function on_window_resize() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-// right arrow
 function add_vertex(){
     if (SHOWN_VERTICES<MAX_VERTICES){
         platonic.geometry.vertices[SHOWN_VERTICES].spherical(Math.random()*360-180, Math.random()*360-180);
@@ -63,7 +62,6 @@ function add_vertex(){
     }
 }
 
-// left arrow
 function remove_vertex(){   
     if (SHOWN_VERTICES>MIN_VERTICES){
         SHOWN_VERTICES--;
@@ -84,19 +82,12 @@ function on_key_down(event){
             camera_controls.backward();
             break;
         case 49:    // 1 button
-            sphere.material.wireframe=true;
-            document.body.className='style_dark';
+            sphere.visible=true;
+            //document.body.className='style_dark';
             break;
         case 50:    // 2 button
-            sphere.material.wireframe=false;
-            document.body.className='style_light';
+            sphere.visible=false;
             break;
-        /*case 39:   // right
-            add_vertex();
-            break;
-        case 37:   // left
-            remove_vertex();
-            break;*/
         default: 
             break;
     }
@@ -114,6 +105,8 @@ function on_key_up(event){
             break;
     }
 }
+
+// function to control the slider (jQuery)
 $( function(){
   $("#slide-control")
     .bind("slider:ready slider:changed", function (event, data) {

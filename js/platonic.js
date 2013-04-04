@@ -15,7 +15,7 @@ var RADIUS=100;
 var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=300;              // speed of vertices
+var VERTEX_MOVEMENT_SPEED=50;              // speed of vertices
     
 init();
 on_enter_frame();
@@ -80,8 +80,10 @@ function on_enter_frame(){
     requestAnimationFrame( on_enter_frame );
     
     /* rotate the sphere */
-    if (mouse.is_dragging)
+    if (mouse.is_dragging){
         geo_container.applyMatrix( rotation_matrix );
+        rotation_matrix.identity();
+    }
     
     /* animate those particles that need animating */
     platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach(update_position);
