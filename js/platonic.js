@@ -15,7 +15,7 @@ var RADIUS=100;
 var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=100;              // change this to adjust speed of vertices
+var VERTEX_MOVEMENT_SPEED=500;              // change this to adjust speed of vertices
     
 init();
 on_enter_frame();
@@ -88,7 +88,7 @@ function on_enter_frame(){
     
     /* animate those particles that need animating */
     platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach(update_position);
-     platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).keepOnSphere();
+    platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).keepOnSphere();
     
     /* inform THREE.js that we've moved the particles */
     platonic.geometry.verticesNeedUpdate=true;
@@ -109,12 +109,12 @@ function on_enter_frame(){
  */
 function update_position(vertex, index){
     var sumOfVecs = new THREE.Vector3();
-    platonic.geometry.vertices.slice( index+1, SHOWN_VERTICES+1 ).forEach( 
+    platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach( 
         function(otherVertex, indexOfOtherVertex){
             var intensity =  Math.inverse( vertex.distanceToSquared( otherVertex ) );
             var copy=otherVertex.clone().multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED ).negate();
             vertex.add( copy );
-            otherVertex.add( copy );
+            otherVertex.add( copy.negate() );
     });
 }
 
