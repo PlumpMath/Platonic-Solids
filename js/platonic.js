@@ -15,7 +15,7 @@ var RADIUS=100;
 var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=250;              // change this to adjust speed of vertices
+var VERTEX_MOVEMENT_SPEED=500;              // change this to adjust speed of vertices
     
 init();
 on_enter_frame();
@@ -111,7 +111,7 @@ function update_position(vertex, index){
             var intensity =  Math.inverse( vertex.distanceToSquared( otherVertex ) );
             var copy=otherVertex.clone().multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED ).negate();
             vertex.add( copy );
-            otherVertex.add( copy );
+            otherVertex.add( copy.negate() );
     });
 }
 
