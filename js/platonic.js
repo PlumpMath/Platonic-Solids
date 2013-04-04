@@ -15,7 +15,7 @@ var RADIUS=100;
 var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=100;              // speed of vertices
+var VERTEX_MOVEMENT_SPEED=300;              // speed of vertices
     
 init();
 on_enter_frame();
@@ -41,15 +41,15 @@ function init(){
             20,                                                      // # of segments along width
             20                                                       // # of segments along height
         ), new THREE.MeshBasicMaterial({                             // fill in the sphere with a material
-            color:              0x0000ff,                            // color of the sphere
+            color:              0x0066ff,                            // color of the sphere
             wireframe:          true,
-            wireframeLinewidth: 1
+            wireframeLinewidth: 2
         }) 
     );  
     
     platonic=new THREE.ParticleSystem( new THREE.Geometry(), 
         new THREE.ParticleBasicMaterial({
-            color:              0x99ff99,
+            color:              0xffff00,
             wireframe:          true,
             wireframeLineWidth: 5,
             size:               10

@@ -91,12 +91,12 @@ function on_key_down(event){
             sphere.material.wireframe=false;
             document.body.className='style_light';
             break;
-        case 39:   // right
+        /*case 39:   // right
             add_vertex();
             break;
         case 37:   // left
             remove_vertex();
-            break;
+            break;*/
         default: 
             break;
     }
