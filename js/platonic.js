@@ -12,9 +12,11 @@ var rotation_matrix=new THREE.Matrix4();    // for rotating the geometry
 var SENSITIVITY=0.005;                      // change this to adjust dragging sensitivity
 var MAX_SPEED=25;                           // change this to adjust speed of zoom-in/out
 var RADIUS=100;
-var MAX_VERTICES=64;
+var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
+var VERTEX_MOVEMENT_SPEED=100;              // change this to adjust speed of vertices
+    
 init();
 on_enter_frame();
 
@@ -35,7 +37,7 @@ function init(){
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
     sphere = new THREE.Mesh( new THREE.SphereGeometry(
-            RADIUS*.95,                                                  // radius
+            RADIUS*.95,                                              // radius
             20,                                                      // # of segments along width
             20                                                       // # of segments along height
         ), new THREE.MeshBasicMaterial({                             // fill in the sphere with a material
@@ -61,26 +63,65 @@ function init(){
     geo_container.add( platonic );
     scene.add( geo_container );
     camera.position.z = -RADIUS*2.5;
-    camera.lookAt( scene.position );
     document.addEventListener( 'keydown', on_key_down, false );
     document.addEventListener( 'keyup', on_key_up, false );
     document.addEventListener( 'onmousedrag', on_mouse_drag, false );
     window.addEventListener( 'resize', on_window_resize, false ); 
+
+
+
 }
 
-
-// tradition as3 name for the function called every frame (~60 fps)
+/* 
+ * called every frame of animation
+ * tradition as3 name for the function called every frame (~60 fps)
+ */
 function on_enter_frame(){
+        camera.lookAt( scene.position );
+
+    /* request this function again for the next iteration */
     requestAnimationFrame( on_enter_frame );
-    if (mouse.is_dragging)                 // rotate the sphere?
+    
+    /* rotate the sphere */
+    if (mouse.is_dragging)
         geo_container.applyMatrix( rotation_matrix );
-    platonic.geometry.vertices.forEach(update_position);
+    
+    /* animate those particles that need animating */
+    platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach(update_position);
+     platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).keepOnSphere();
+    
+    /* inform THREE.js that we've moved the particles */
     platonic.geometry.verticesNeedUpdate=true;
+    
+    /* deal with camera movement (see controls.js) */
     camera.position.z += camera_controls.velocity_z;
-    sphere.rotation.y-=0.003;
+    
+    /* rotate the sphere */
+    //sphere.rotation.y-=0.003;
+    
+    /* let the renderer do its thing */
     renderer.render( scene, camera );
 }
 
+/*
+ * the fun part
+ * controls all of the vertices that should be updated
+ */
+function update_position(vertex, index){
+    var sumOfVecs = new THREE.Vector3();
+    platonic.geometry.vertices.slice( index+1, SHOWN_VERTICES+1 ).forEach( 
+        function(otherVertex, indexOfOtherVertex){
+            var intensity =  Math.inverse( vertex.distanceToSquared( otherVertex ) );
+            var copy=otherVertex.clone().multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED ).negate();
+            vertex.add( copy );
+            otherVertex.add( copy );
+    });
+}
+
+
+/*
+ * fills our platonic array with lots of particles
+ */
 function init_platonic(){
     for (var i=0; i<MAX_VERTICES; i++){
         if (i<SHOWN_VERTICES)
@@ -89,39 +130,11 @@ function init_platonic(){
             );
         else
             platonic.geometry.vertices.push( 
-                new THREE.Vector3( rand(), rand(), rand() )
+                new THREE.Vector3( -1000, -1000, -1000 )
             );
     }
-        //for (var i=2; i<MAX_VERTICES; i++)
-    //    platonic.geometry.vertices.faces.push( new THREE. Face3( i-2, i-1, i ) );
-}
 
-function update_position(vertex, index){
-    if (index<SHOWN_VERTICES)
-        vertex.add_spherical( Math.random()*3, Math.random()*2 );
 }
-function add_vertex(){
-    if (SHOWN_VERTICES<MAX_VERTICES){
-        platonic.geometry.vertices[SHOWN_VERTICES].spherical(90, Math.random()*360-180);
-        SHOWN_VERTICES++;
-    }
-}
-
-function remove_vertex(){   
-    if (SHOWN_VERTICES>MIN_VERTICES){
-        SHOWN_VERTICES--;
-        platonic.geometry.vertices[SHOWN_VERTICES].x=rand(),
-        platonic.geometry.vertices[SHOWN_VERTICES].y=rand(),
-        platonic.geometry.vertices[SHOWN_VERTICES].z=rand();
-        console.log( platonic.geometry.vertices[SHOWN_VERTICES] );
-    }
-}
-function rand(){
-    return Math.random()*800-400;
-}
-
-
-
 
 
 

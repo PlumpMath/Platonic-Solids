@@ -5,9 +5,13 @@
  * this file contains the camera controller and event handlers
  */
 
-var camera_controls={                       // controls camera movement.
-    velocity_z: 0,                          // this is designed to be easily changed for more a more interesting
-    rotate_degrees: 0,                      // velocity function in the future
+ /*
+  * controls camera movement
+  * not as cool as I intended it to be, but to be done eventually
+  */
+var camera_controls={  
+    velocity_z: 0,                       
+    rotate_degrees: 0,                    
     acceleration: function( x ){
         return 5; //(x+1)*2;
     },
@@ -49,6 +53,24 @@ function on_window_resize() {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+// right arrow
+function add_vertex(){
+    if (SHOWN_VERTICES<MAX_VERTICES){
+        platonic.geometry.vertices[SHOWN_VERTICES].spherical(Math.random()*360-180, Math.random()*360-180);
+        SHOWN_VERTICES++;
+    }
+}
+
+// left arrow
+function remove_vertex(){   
+    if (SHOWN_VERTICES>MIN_VERTICES){
+        SHOWN_VERTICES--;
+        platonic.geometry.vertices[SHOWN_VERTICES].x=-1000,
+        platonic.geometry.vertices[SHOWN_VERTICES].y=-1000,
+        platonic.geometry.vertices[SHOWN_VERTICES].z=-1000;
+    }
 }
 
 // handles all key events and dishes out the work
