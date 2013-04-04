@@ -15,7 +15,7 @@ var RADIUS=100;
 var MAX_VERTICES=20;
 var MIN_VERTICES=3;
 var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=500;              // change this to adjust speed of vertices
+var VERTEX_MOVEMENT_SPEED=250;              // change this to adjust speed of vertices
     
 init();
 on_enter_frame();
@@ -63,13 +63,11 @@ function init(){
     geo_container.add( platonic );
     scene.add( geo_container );
     camera.position.z = -RADIUS*2.5;
+    camera.lookAt( scene.position );
     document.addEventListener( 'keydown', on_key_down, false );
     document.addEventListener( 'keyup', on_key_up, false );
     document.addEventListener( 'onmousedrag', on_mouse_drag, false );
     window.addEventListener( 'resize', on_window_resize, false ); 
-
-
-
 }
 
 /* 
@@ -77,7 +75,6 @@ function init(){
  * tradition as3 name for the function called every frame (~60 fps)
  */
 function on_enter_frame(){
-        camera.lookAt( scene.position );
 
     /* request this function again for the next iteration */
     requestAnimationFrame( on_enter_frame );
@@ -114,13 +111,18 @@ function update_position(vertex, index){
             var intensity =  Math.inverse( vertex.distanceToSquared( otherVertex ) );
             var copy=otherVertex.clone().multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED ).negate();
             vertex.add( copy );
-            otherVertex.add( copy.negate() );
+            otherVertex.add( copy );
     });
 }
 
 
 /*
  * fills our platonic array with lots of particles
+ * NOTE the way this is working:
+ * I am adding maximum amount of vertices to our platonic geometry now,
+ * because vertices added during runtime are very costly. So, the ones that
+ * are not shown are simply moved off screen and are not interacted with by 
+ * other vertices.
  */
 function init_platonic(){
     for (var i=0; i<MAX_VERTICES; i++){
