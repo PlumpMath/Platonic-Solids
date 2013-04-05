@@ -35,14 +35,14 @@ var camera_controls={
 
 // function to control the slider (jQuery)
 $( function(){
-  $("#slide-control")
-        .simpleSlider("setValue", MIN_VERTICES)
-        .bind("slider:ready slider:changed", function (event, data) {
+  $('#slide-control')
+        .simpleSlider('setValue', MIN_VERTICES)
+        .bind('slider:ready slider:changed', function (event, data) {
         
             while (data.value > SHOWN_VERTICES)
                 SHOWN_VERTICES++
             
-            while(data.value < SHOWN_VERTICES)
+            while (data.value < SHOWN_VERTICES)
                 platonic.geometry.vertices[--SHOWN_VERTICES].be_gone();
                 
              $( '#particle-amount' ).html( SHOWN_VERTICES );
@@ -50,10 +50,11 @@ $( function(){
     }); 
     $( '#speed-control' )
         .simpleSlider( 'setValue', DEFAULT_SPEED )
-        .bind("slider:ready slider:changed", function (event, data) {
+        .bind('slider:ready slider:changed', function (event, data) {
             
             VERTEX_MOVEMENT_SPEED=data.value;
             $( '#speed' ).html( VERTEX_MOVEMENT_SPEED );
+            
     }); 
 });
 
