@@ -22,7 +22,8 @@ var RADIUS=100;                             // the radius of the circle. used in
 var MAX_VERTICES=20;                        // the maximum allowed vertices to be displayed on screen
 var MIN_VERTICES=3;                         // the minimum allowed amt of vertices to be displayed on screen
 var SHOWN_VERTICES=3;                       // how many vertices are currently shown
-var VERTEX_MOVEMENT_SPEED=50;               // speed of vertices
+var DEFAULT_SPEED=30;                       // starting speed of vertices
+var VERTEX_MOVEMENT_SPEED=30;               // current speed of vertices
     
 init();
 on_enter_frame();
@@ -44,7 +45,7 @@ function init(){
     );
     
     sphere = new THREE.Mesh( new THREE.SphereGeometry(
-            RADIUS*.95,                                              // radius
+            RADIUS*.90,                                              // radius
             20,                                                      // # of segments along width
             20                                                       // # of segments along height
         ), new THREE.MeshBasicMaterial({                             // fill in the sphere with a material
@@ -57,12 +58,16 @@ function init(){
     platonic=new THREE.ParticleSystem( new THREE.Geometry(),         // the container for our particles
         new THREE.ParticleBasicMaterial({                            // that we will manipulate later
             wireframe:          true,
-            wireframeLineWidth: 5,
-            size:               10,
-            vertexColors:       true
+            size:               25,
+            map:                THREE.ImageUtils.loadTexture(
+                                    "images/particle.png"
+                                ),
+            blending:           THREE.AdditiveBlending  ,
+            transparent:        true
+            //vertexColors:        true
         }) 
-    );
-    
+    );    
+
     /* fill up platonic with vertices */
     init_platonic();
 
@@ -102,7 +107,7 @@ function on_enter_frame(){
     platonic.geometry.verticesNeedUpdate=true;
 
     /* deal with camera movement (see controls.js) */
-    camera.position.z += camera_controls.velocity_z;
+    //camera.position.z += camera_controls.velocity_z;
     
     /* rotate the sphere */
     sphere.rotation.y-=0.003;
@@ -119,20 +124,20 @@ function update_position(vertex, index){
 
     // loop through all the vertices, applying their "push" to this vector
     platonic.geometry.vertices.slice( index, SHOWN_VERTICES ).forEach( 
-        function(otherVertex, indexOfOtherVertex){
+        function(other_vertex, indexOfother_vertex){
         
-            var intensity = Math.inverse( vertex.distanceToSquared( otherVertex ) );
+            var intensity = Math.inverse( vertex.distanceToSquared( other_vertex ) ) * VERTEX_MOVEMENT_SPEED;
             
-            var otherVertexForce = otherVertex.clone()
-                .multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED )
+            var other_vertex_force = other_vertex.clone()
+                .multiplyScalar( intensity )
                 .negate();
             
-            var thisVertexForce = vertex.clone()
-                .multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED )
+            var this_vertex_force = vertex.clone()
+                .multiplyScalar( intensity )
                 .negate();
             
-            otherVertex.add( thisVertexForce );
-            vertex.add( otherVertexForce );
+            other_vertex.add( this_vertex_force );
+            vertex.add( other_vertex_force );
     });
     // move the vertex back onto the sphere
     vertex.show();
@@ -151,12 +156,10 @@ function update_position(vertex, index){
 function init_platonic(){
     for (var i=0; i<MAX_VERTICES; i++){
         platonic.geometry.vertices.push( new THREE.Vector3.random(i) );
-        if (i<SHOWN_VERTICES){
+        if (i<SHOWN_VERTICES)
             platonic.geometry.vertices[i].show();
-        }
-        else{
-            platonic.geometry.vertices[i].beGone();
-        }
+        else
+            platonic.geometry.vertices[i].be_gone();
     }
 }
 

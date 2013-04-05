@@ -21,29 +21,39 @@ var camera_controls={
         return -5; //-((Math.abs(x)+1)*2);
     },
     forward: function(){
-        this.velocity_z=this.acceleration(this.velocity_z)
+        /*this.velocity_z=this.acceleration(this.velocity_z)
         if (this.velocity_z>MAX_SPEED)
-            this.velocity_z=MAX_SPEED;
+            this.velocity_z=MAX_SPEED;*/
     },
     backward: function(){
-        this.velocity_z=this.deceleration(this.velocity_z)
+        
+        /*this.velocity_z=this.deceleration(this.velocity_z)
         if (this.velocity_z<-(MAX_SPEED))
-            this.velocity_z=-(MAX_SPEED);
+            this.velocity_z=-(MAX_SPEED);*/
     }
 };
 
 // function to control the slider (jQuery)
 $( function(){
   $("#slide-control")
-    .simpleSlider("setValue", MIN_VERTICES)
-    .bind("slider:ready slider:changed", function (event, data) {
-    
-        while (data.value > SHOWN_VERTICES)
-            platonic.geometry.vertices[SHOWN_VERTICES++].beGone();
+        .simpleSlider("setValue", MIN_VERTICES)
+        .bind("slider:ready slider:changed", function (event, data) {
         
-        while(data.value < SHOWN_VERTICES)
-            platonic.geometry.vertices[--SHOWN_VERTICES].beGone();
+            while (data.value > SHOWN_VERTICES)
+                SHOWN_VERTICES++
             
+            while(data.value < SHOWN_VERTICES)
+                platonic.geometry.vertices[--SHOWN_VERTICES].be_gone();
+                
+             $( '#particle-amount' ).html( SHOWN_VERTICES );
+            
+    }); 
+    $( '#speed-control' )
+        .simpleSlider( 'setValue', DEFAULT_SPEED )
+        .bind("slider:ready slider:changed", function (event, data) {
+            
+            VERTEX_MOVEMENT_SPEED=data.value;
+            $( '#speed' ).html( VERTEX_MOVEMENT_SPEED );
     }); 
 });
 

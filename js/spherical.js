@@ -22,10 +22,10 @@ THREE.Vector3.prototype.show=function(){
     this.setLength( RADIUS );
 }
 
-THREE.Vector3.prototype.beGone=function(){
+THREE.Vector3.prototype.be_gone=function(){
     platonic.geometry.colors[ this.index ] = THREE.Color.gone_color();
     platonic.geometry.colorsNeedUpdate=true;
-    this.setLength( 10 );
+    this.setLength( RADIUS/3 );
 }
 
 THREE.Color.gone_color=function(){

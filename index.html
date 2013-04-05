@@ -29,6 +29,14 @@
                 max-width: 500px;
                 border-radius: 15px;
                 background: rgba( 255, 255, 255, 0.5 );
+                padding: 1% 1%;
+            }
+            label {
+                font-size: 16pt;
+            }
+            .particles {
+                margin-top: 5%;
+                display: block;
             }
         </style> 
     </head> 
@@ -45,6 +53,10 @@
         <!-- the main file -->
         <script src="js/platonic.js"></script> 
         <div id="slider">
+            <label> Speed <span id="speed">30</span></label>
+            <input type="text"
+                data-slider-range="30,300" id="speed-control" data-slider="true" >
+            <label class="particles"> Particles <span id="particle-amount">3</span></label>
             <input type="text" data-slider-snap="true" data-slider-step="1" 
                 data-slider-range="3,20" id="slide-control" data-slider="true" >
         </div>
