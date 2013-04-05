@@ -1,6 +1,6 @@
 
 /*
-* author: Nick Sullivan
+* Nick Sullivan
 * http://github.com/ncksllvn
 * file: platonic.js
 *

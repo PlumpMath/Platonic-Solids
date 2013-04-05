@@ -1,5 +1,6 @@
 /*
  * Nick Sullivan
+ * http://github.com/ncksllvn
  * spherical.js
  * extends Vector3 to keep the points on the sphere
  */
