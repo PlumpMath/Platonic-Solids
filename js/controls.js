@@ -1,6 +1,7 @@
 
 /*
  * Nick Sullivan
+ * http://github.com/ncksllvn
  * controls.js
  * this file contains the camera controller and event handlers
  */

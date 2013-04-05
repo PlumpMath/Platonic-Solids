@@ -8,7 +8,7 @@
 * The controls file has (mostly) everything that deals with user interaction, including
 * how the sphere is rotated, and the onscreen slider.
 *
-* Note that this project uses THREE.js (https://github.com/mrdoob/three.js/)
+* Note that this project uses the amazing THREE.js (https://github.com/mrdoob/three.js/)
 */
 
 var geo_container, sphere, platonic;        // main geometric objects
