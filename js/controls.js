@@ -9,6 +9,7 @@
   * controls camera movement
   * not as cool as I intended it to be, but to be done eventually
   */
+
 var camera_controls={  
     velocity_z: 0,                       
     rotate_degrees: 0,                    
@@ -57,18 +58,18 @@ function on_window_resize() {
 
 function add_vertex(){
     if (SHOWN_VERTICES<MAX_VERTICES){
-        platonic.geometry.vertices[SHOWN_VERTICES].spherical(Math.random()*360-180, Math.random()*360-180);
+        //platonic.geometry.vertices[SHOWN_VERTICES].spherical(Math.random()*360-180, Math.random()*360-180);
         SHOWN_VERTICES++;
     }
 }
 
 function remove_vertex(){   
-    if (SHOWN_VERTICES>MIN_VERTICES){
-        SHOWN_VERTICES--;
-        platonic.geometry.vertices[SHOWN_VERTICES].x=-1000,
-        platonic.geometry.vertices[SHOWN_VERTICES].y=-1000,
-        platonic.geometry.vertices[SHOWN_VERTICES].z=-1000;
-    }
+    console.log( 'here' );
+    SHOWN_VERTICES--;
+    platonic.geometry.vertices[SHOWN_VERTICES].x=-1000,
+    platonic.geometry.vertices[SHOWN_VERTICES].y=-1000,
+    platonic.geometry.vertices[SHOWN_VERTICES].z=-1000;
+    
 }
 
 // handles all key events and dishes out the work
@@ -83,7 +84,6 @@ function on_key_down(event){
             break;
         case 49:    // 1 button
             sphere.visible=true;
-            //document.body.className='style_dark';
             break;
         case 50:    // 2 button
             sphere.visible=false;
@@ -106,17 +106,24 @@ function on_key_up(event){
     }
 }
 
+// register the event listeners
+document.addEventListener( 'keydown', on_key_down, false );
+document.addEventListener( 'keyup', on_key_up, false );
+document.addEventListener( 'onmousedrag', on_mouse_drag, false );
+window.addEventListener( 'resize', on_window_resize, false ); 
+
 // function to control the slider (jQuery)
 $( function(){
   $("#slide-control")
+    .simpleSlider("setValue", MIN_VERTICES)
     .bind("slider:ready slider:changed", function (event, data) {
-        if (data.value > SHOWN_VERTICES)
-            add_vertex();
+        if (data.value > SHOWN_VERTICES){
+             while( SHOWN_VERTICES < data.value )
+                platonic.geometry.vertices[SHOWN_VERTICES++].beGone();
+        }
         else if (data.value < SHOWN_VERTICES)
-            remove_vertex();
-        console.log( SHOWN_VERTICES );
-    }).simpleSlider("setValue", 3); 
- });
-    
-    
+             while( SHOWN_VERTICES > data.value )
+                platonic.geometry.vertices[--SHOWN_VERTICES].beGone();
+    }); 
+});
     

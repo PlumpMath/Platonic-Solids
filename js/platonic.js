@@ -1,73 +1,83 @@
 
 /*
 * author: Nick Sullivan
+* http://github.com/ncksllvn
 * file: platonic.js
+*
+* This file contains only the primary/fun functions that manipulate the vertices.
+* The controls file has (mostly) everything that deals with user interaction, including
+* how the sphere is rotated, and the onscreen slider.
+*
+* Note that this project uses THREE.js (https://github.com/mrdoob/three.js/)
 */
 
 var geo_container, sphere, platonic;        // main geometric objects
-var camera, scene, renderer;                // 
+var camera, scene, renderer;                // see THREE.js documentation
 var windowHalfX = window.innerWidth / 2;    // for maintaining the aspect ratio
 var windowHalfY = window.innerHeight / 2;   
 var rotation_matrix=new THREE.Matrix4();    // for rotating the geometry
 var SENSITIVITY=0.005;                      // change this to adjust dragging sensitivity
 var MAX_SPEED=25;                           // change this to adjust speed of zoom-in/out
-var RADIUS=100;
-var MAX_VERTICES=20;
-var MIN_VERTICES=3;
-var SHOWN_VERTICES=3;
-var VERTEX_MOVEMENT_SPEED=50;              // speed of vertices
+var RADIUS=100;                             // the radius of the circle. used in more placed than just that
+var MAX_VERTICES=20;                        // the maximum allowed vertices to be displayed on screen
+var MIN_VERTICES=3;                         // the minimum allowed amt of vertices to be displayed on screen
+var SHOWN_VERTICES=3;                       // how many vertices are currently shown
+var VERTEX_MOVEMENT_SPEED=50;               // speed of vertices
     
 init();
 on_enter_frame();
 
 /*
- * large function that does all of the necessary setting up
+ * large function that does all of the necessary setting up for THREE.js
  */
 function init(){
-    scene=new THREE.Scene();
+    scene=new THREE.Scene();                                     // holds all geometry
+    renderer = new THREE.WebGLRenderer();                        // renders the scene
+    renderer.setSize( window.innerWidth, window.innerHeight );   // sets the screen size
+    document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
+    
     camera = new THREE.PerspectiveCamera(       // most common type of camera
         60,                                     // field of view
         window.innerWidth / window.innerHeight, // aspect ratio: always use this, or else it'll look squished
         1,                                      // near clipping-plane: objects closer than this won't be rendered
         10000                                   // far clipping-plane: objects further away won't be rendered
     );
-
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );   // set pixel size; innerWidth/2 will be 1/2 the resolution
-    document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
     sphere = new THREE.Mesh( new THREE.SphereGeometry(
             RADIUS*.95,                                              // radius
             20,                                                      // # of segments along width
             20                                                       // # of segments along height
         ), new THREE.MeshBasicMaterial({                             // fill in the sphere with a material
-            color:              0x0066ff,                            // color of the sphere
+            color:              0x057d9f,
             wireframe:          true,
             wireframeLinewidth: 2
         }) 
     );  
     
-    platonic=new THREE.ParticleSystem( new THREE.Geometry(), 
-        new THREE.ParticleBasicMaterial({
-            color:              0xffff00,
+    platonic=new THREE.ParticleSystem( new THREE.Geometry(),         // the container for our particles
+        new THREE.ParticleBasicMaterial({                            // that we will manipulate later
             wireframe:          true,
             wireframeLineWidth: 5,
-            size:               10
+            size:               10,
+            vertexColors:       true
         }) 
     );
     
-    platonic.geometry.dynamic = true;
+    /* fill up platonic with vertices */
     init_platonic();
-	geo_container = new THREE.Object3D();  
+
+    /* create a container for mouse drag rotations */
+    geo_container = new THREE.Object3D();  
     geo_container.add( sphere );
     geo_container.add( platonic );
+    
+    /* add that container to the scene */
     scene.add( geo_container );
+    
+    /* set up camera */
     camera.position.z = -RADIUS*2.5;
     camera.lookAt( scene.position );
-    document.addEventListener( 'keydown', on_key_down, false );
-    document.addEventListener( 'keyup', on_key_up, false );
-    document.addEventListener( 'onmousedrag', on_mouse_drag, false );
-    window.addEventListener( 'resize', on_window_resize, false ); 
+
 }
 
 /* 
@@ -76,10 +86,10 @@ function init(){
  */
 function on_enter_frame(){
 
-    /* request this function again for the next iteration */
+    /* request this function again for the next frame */
     requestAnimationFrame( on_enter_frame );
     
-    /* rotate the sphere */
+    /* rotate the sphere (see controls.js) */
     if (mouse.is_dragging){
         geo_container.applyMatrix( rotation_matrix );
         rotation_matrix.identity();
@@ -87,16 +97,15 @@ function on_enter_frame(){
     
     /* animate those particles that need animating */
     platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach(update_position);
-    platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).keepOnSphere();
     
     /* inform THREE.js that we've moved the particles */
     platonic.geometry.verticesNeedUpdate=true;
-    
+
     /* deal with camera movement (see controls.js) */
     camera.position.z += camera_controls.velocity_z;
     
     /* rotate the sphere */
-    //sphere.rotation.y-=0.003;
+    sphere.rotation.y-=0.003;
     
     /* let the renderer do its thing */
     renderer.render( scene, camera );
@@ -107,14 +116,26 @@ function on_enter_frame(){
  * controls all of the vertices that should be updated
  */
 function update_position(vertex, index){
-    var sumOfVecs = new THREE.Vector3();
-    platonic.geometry.vertices.slice( 0, SHOWN_VERTICES ).forEach( 
+
+    // loop through all the vertices, applying their "push" to this vector
+    platonic.geometry.vertices.slice( index, SHOWN_VERTICES ).forEach( 
         function(otherVertex, indexOfOtherVertex){
-            var intensity =  Math.inverse( vertex.distanceToSquared( otherVertex ) );
-            var copy=otherVertex.clone().multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED );
-            vertex.add( copy.negate() );
-            otherVertex.add( copy );
+        
+            var intensity = Math.inverse( vertex.distanceToSquared( otherVertex ) );
+            
+            var otherVertexForce = otherVertex.clone()
+                .multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED )
+                .negate();
+            
+            var thisVertexForce = vertex.clone()
+                .multiplyScalar( intensity*VERTEX_MOVEMENT_SPEED )
+                .negate();
+            
+            otherVertex.add( thisVertexForce );
+            vertex.add( otherVertexForce );
     });
+    // move the vertex back onto the sphere
+    vertex.show();
 }
 
 
@@ -126,18 +147,17 @@ function update_position(vertex, index){
  * are not shown are simply moved off screen and are not interacted with by 
  * other vertices.
  */
+
 function init_platonic(){
     for (var i=0; i<MAX_VERTICES; i++){
-        if (i<SHOWN_VERTICES)
-            platonic.geometry.vertices.push( 
-                new Spherical( Math.random()*200-100, Math.random()*200-100 )
-            );
-        else
-            platonic.geometry.vertices.push( 
-                new THREE.Vector3( -1000, -1000, -1000 )
-            );
+        platonic.geometry.vertices.push( new THREE.Vector3.random(i) );
+        if (i<SHOWN_VERTICES){
+            platonic.geometry.vertices[i].show();
+        }
+        else{
+            platonic.geometry.vertices[i].beGone();
+        }
     }
-
 }
 
 
