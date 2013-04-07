@@ -11,27 +11,6 @@
   * not as cool as I intended it to be, but to be done eventually
   */
 
-var camera_controls={  
-    velocity_z: 0,                       
-    rotate_degrees: 0,                    
-    acceleration: function( x ){
-        return 5; //(x+1)*2;
-    },
-    deceleration: function( x ){
-        return -5; //-((Math.abs(x)+1)*2);
-    }
-    /*forward: function(){
-        this.velocity_z=this.acceleration(this.velocity_z)
-        if (this.velocity_z>MAX_SPEED)
-            this.velocity_z=MAX_SPEED;
-    },
-    backward: function(){
-        console.log( camera )
-        this.velocity_z=this.deceleration(this.velocity_z)
-        if (this.velocity_z<-(MAX_SPEED))
-            this.velocity_z=-(MAX_SPEED);
-    }*/
-};
 
 // function to control the slider (jQuery)
 $( function(){

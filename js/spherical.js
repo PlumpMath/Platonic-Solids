@@ -17,23 +17,16 @@ THREE.Vector3.random=function(index){
 }
 
 THREE.Vector3.prototype.show=function(){
-    platonic.geometry.colors[ this.index ] = THREE.Color.show_color();
+    platonic.geometry.colors[ this.index ] = new THREE.Color(0xffb300);
     platonic.geometry.colorsNeedUpdate=true;
     this.setLength( RADIUS );
+    console.log( this );
 }
 
 THREE.Vector3.prototype.be_gone=function(){
-    platonic.geometry.colors[ this.index ] = THREE.Color.gone_color();
+    platonic.geometry.colors[ this.index ] = new THREE.Color(0x071c71);
     platonic.geometry.colorsNeedUpdate=true;
-    this.setLength( RADIUS/3 );
-}
-
-THREE.Color.gone_color=function(){
-    return new THREE.Color( 0x071c71 );
-}
-
-THREE.Color.show_color=function(){
-    return new THREE.Color( 0xffb300 );
+    this.setLength( RADIUS/12 );
 }
 
 Math.inverse=function( num ){
