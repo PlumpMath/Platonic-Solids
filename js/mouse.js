@@ -1,9 +1,10 @@
 
 /*
-* author: Nick Sullivan (github username: ncksllvn, email: ncksllvn@gmail.com)
-* file: mouse.js
-* desc: creates a mouse object that imitates the ondrag event.
-*/
+ * Nick Sullivan
+ * http://github.com/ncksllvn
+ * mouse.js
+ * creates a mouse object that imitates the ondrag event.
+ */
 
 
 var mouse={

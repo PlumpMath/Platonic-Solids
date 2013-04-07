@@ -34,7 +34,7 @@ on_enter_frame();
 function init(){
     scene=new THREE.Scene();                                     // holds all geometry
     renderer = new THREE.WebGLRenderer();                        // renders the scene
-    renderer.setSize( window.innerWidth, window.innerHeight );   // sets the screen size
+    renderer.setSize( window.innerWidth, window.innerHeight);   // sets the screen size
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
     camera = new THREE.PerspectiveCamera(       // most common type of camera
@@ -64,7 +64,7 @@ function init(){
                                 ),
             blending:           THREE.AdditiveBlending  ,
             transparent:        true
-            //vertexColors:        true
+            //  vertexColors:        true
         }) 
     );    
 
@@ -110,7 +110,8 @@ function on_enter_frame(){
     //camera.position.z += camera_controls.velocity_z;
     
     /* rotate the sphere */
-    sphere.rotation.y-=0.003;
+    geo_container.rotation.y-=0.003;
+    
     
     /* let the renderer do its thing */
     renderer.render( scene, camera );

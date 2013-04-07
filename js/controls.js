@@ -19,23 +19,25 @@ var camera_controls={
     },
     deceleration: function( x ){
         return -5; //-((Math.abs(x)+1)*2);
-    },
-    forward: function(){
-        /*this.velocity_z=this.acceleration(this.velocity_z)
+    }
+    /*forward: function(){
+        this.velocity_z=this.acceleration(this.velocity_z)
         if (this.velocity_z>MAX_SPEED)
-            this.velocity_z=MAX_SPEED;*/
+            this.velocity_z=MAX_SPEED;
     },
     backward: function(){
-        
-        /*this.velocity_z=this.deceleration(this.velocity_z)
+        console.log( camera )
+        this.velocity_z=this.deceleration(this.velocity_z)
         if (this.velocity_z<-(MAX_SPEED))
-            this.velocity_z=-(MAX_SPEED);*/
-    }
+            this.velocity_z=-(MAX_SPEED);
+    }*/
 };
 
 // function to control the slider (jQuery)
 $( function(){
-  $('#slide-control')
+    var particle_amount=$( '#particle-amount' );
+    var speed= $( '#speed' );
+    $('#slide-control')
         .simpleSlider('setValue', MIN_VERTICES)
         .bind('slider:ready slider:changed', function (event, data) {
         
@@ -45,7 +47,7 @@ $( function(){
             while (data.value < SHOWN_VERTICES)
                 platonic.geometry.vertices[--SHOWN_VERTICES].be_gone();
                 
-             $( '#particle-amount' ).html( SHOWN_VERTICES );
+             particle_amount.html( SHOWN_VERTICES );
             
     }); 
     $( '#speed-control' )
@@ -53,7 +55,7 @@ $( function(){
         .bind('slider:ready slider:changed', function (event, data) {
             
             VERTEX_MOVEMENT_SPEED=data.value;
-            $( '#speed' ).html( VERTEX_MOVEMENT_SPEED );
+            speed.html( VERTEX_MOVEMENT_SPEED );
             
     }); 
 });
@@ -94,12 +96,12 @@ function on_window_resize() {
 function on_key_down(event){
     //console.log( event.keyCode );
     switch( event.keyCode ){
-        case 38:    // up
+        /*case 38:    // up
             camera_controls.forward();
             break;
         case 40:    // down
             camera_controls.backward();
-            break;
+            break;*/
         case 49:    // 1 button
             document.body.style.backgroundColor='#000000';
             break;
