@@ -1,8 +1,8 @@
 /*
  * Nick Sullivan
  * http://github.com/ncksllvn
- * spherical.js
- * extends Vector3 to keep the points on the sphere
+ * helpers.js
+ * adds to Vector3 to keep the points on the sphere
  */
 
 
@@ -17,15 +17,10 @@ THREE.Vector3.random=function(index){
 }
 
 THREE.Vector3.prototype.show=function(){
-    platonic.geometry.colors[ this.index ] = new THREE.Color(0xffb300);
-    platonic.geometry.colorsNeedUpdate=true;
     this.setLength( RADIUS );
-    console.log( this );
 }
 
 THREE.Vector3.prototype.be_gone=function(){
-    platonic.geometry.colors[ this.index ] = new THREE.Color(0x071c71);
-    platonic.geometry.colorsNeedUpdate=true;
     this.setLength( RADIUS/12 );
 }
 

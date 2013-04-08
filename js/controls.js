@@ -6,45 +6,65 @@
  * this file contains the camera controller and event handlers
  */
 
- /*
-  * controls camera movement
-  * not as cool as I intended it to be, but to be done eventually
-  */
-
-
-// function to control the slider (jQuery)
+// function to control the sliders (jQuery)
 $( function(){
-    var particle_amount=$( '#particle-amount' );
-    var speed= $( '#speed' );
-    $('#slide-control')
-        .simpleSlider('setValue', MIN_VERTICES)
-        .bind('slider:ready slider:changed', function (event, data) {
+
+    var particle_span=$( '#particle-amount' )
+        .html( shown_particles );
         
-            while (data.value > SHOWN_VERTICES)
-                SHOWN_VERTICES++
+    var intensity_span= $( '#intensity' )
+        .html( intensity );
+    
+    var PARTICLE_RANGE=MAX_PARTICLES-MIN_PARTICLES;
+    
+    var INTENSITY_RANGE=MAX_INTENSITY-MIN_INTENSITY;
+    
+    $('#particle-control')
+        .simpleSlider()
+        .simpleSlider('setValue', (shown_particles-MIN_PARTICLES)/MAX_PARTICLES )
+        .bind('slider:ready slider:changed',         
+            function (event, data) {
             
-            while (data.value < SHOWN_VERTICES)
-                platonic.geometry.vertices[--SHOWN_VERTICES].be_gone();
+                var val=MIN_PARTICLES + data.value*PARTICLE_RANGE;
+            
+                while (val > shown_particles)
+                    shown_particles++
                 
-             particle_amount.html( SHOWN_VERTICES );
-            
+                while (val < shown_particles)
+                    platonic.geometry.vertices[--shown_particles].be_gone();
+                    
+                 particle_span.html( shown_particles );
+                 
     }); 
-    $( '#speed-control' )
-        .simpleSlider( 'setValue', DEFAULT_SPEED )
-        .bind('slider:ready slider:changed', function (event, data) {
+    
+    $( '#intensity-control' )
+        .simpleSlider()
+        .simpleSlider( 'setValue', (intensity-MIN_INTENSITY)/MAX_INTENSITY )
+        .bind('slider:ready slider:changed', 
+            function (event, data) {
+                
+                intensity=parseInt( MIN_INTENSITY + data.value*INTENSITY_RANGE );
+                intensity_span.html( intensity );
             
-            VERTEX_MOVEMENT_SPEED=data.value;
-            speed.html( VERTEX_MOVEMENT_SPEED );
-            
-    }); 
+    });
+    
+    $( '#background-button' ).on( 'click', 
+        function(){
+            on_key_down( { keyCode : 49 } );
+    });
+    
+    $( '#sphere-button' ).on( 'click', 
+        function(){
+            on_key_down( { keyCode : 50 } );
+    });
+    
+    // register the event listeners
+    document.addEventListener( 'keydown', on_key_down, false );
+    document.addEventListener( 'onmousedrag', on_mouse_drag, false );
+    window.addEventListener( 'resize', on_window_resize, false ); 
+    onload();
 });
 
-
-// register the event listeners
-document.addEventListener( 'keydown', on_key_down, false );
-document.addEventListener( 'keyup', on_key_up, false );
-document.addEventListener( 'onmousedrag', on_mouse_drag, false );
-window.addEventListener( 'resize', on_window_resize, false ); 
 
 /* 
    on_mouse_drag handles the onmousedrag event
@@ -73,33 +93,15 @@ function on_window_resize() {
 
 // handles all key events and dishes out the work
 function on_key_down(event){
-    //console.log( event.keyCode );
     switch( event.keyCode ){
-        /*case 38:    // up
-            camera_controls.forward();
-            break;
-        case 40:    // down
-            camera_controls.backward();
-            break;*/
         case 49:    // 1 button
-            document.body.style.backgroundColor='#000000';
+            document.body.style.backgroundColor=
+                ( document.body.style.backgroundColor=='white' ) ? 'black' : 'white';
             break;
-        case 50:    // 2 button
-            document.body.style.backgroundColor='#ffffff';
-            break;
-        case 51:
+        case 50:
             sphere.visible=!sphere.visible;
         default: 
             break;
     }
 }
 
-function on_key_up(event){
-    switch( event.keyCode ){
-        case 38:  // up
-        case 40: // down
-            camera_controls.velocity_z=0;
-        default: 
-            break;
-    }
-}

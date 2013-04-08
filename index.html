@@ -13,19 +13,13 @@
                 overflow: hidden;
                 font-family: sans-serif;
                 cursor: crosshair;
-                background: #000000;
-            }
-            .style_dark {
-                background: #000;
-            }
-            .style_light {
-                background: #fff;
+                background-color: black;
             }
             #slider {
                 position: absolute;
-                bottom: 2.5%;
-                right: 5%;
-                width: 50%;
+                bottom: .5%;
+                right: .5%;
+                width: 25%;
                 max-width: 300px;
                 border-radius: 15px;
                 background: rgba( 255, 255, 255, 0.5 );
@@ -33,10 +27,18 @@
             }
             label {
                 font-size: 11pt;
-            }
-            .speed {
-                margin-top: 3px;
+                margin-top: 13px;
                 display: block;
+            }
+            input[type="button"] {
+                width: 48%;
+                margin: 0;
+                padding: 2px 0 0 0;
+                cursor: pointer;
+                border-top-left-radius: 15px;
+                border-top-right-radius: 15px;
+                background: #fff;
+                border: none;
             }
         </style> 
     </head> 
@@ -49,16 +51,27 @@
         <!-- defines and handles user interaction events -->
         <script src="js/controls.js"></script>
         <!-- extends and adds to other classes -->
-        <script src="js/spherical.js"></script>
+        <script src="js/helpers.js"></script>
         <!-- the main file -->
         <script src="js/platonic.js"></script> 
         <div id="slider">
-            <label> Particles: <span id="particle-amount">3</span></label>
-            <input type="text" data-slider-snap="true" data-slider-step="1" 
-                data-slider-range="3,20" id="slide-control" data-slider="true" >
-            <label class="speed"> Force: <span id="speed">30</span></label>
-            <input type="text"
-                data-slider-range="30,500" id="speed-control" data-slider="true" >
+        
+            <input type="button" id="sphere-button" value="sphere" />
+            
+            <input type="button" id="background-button" value="background" />
+            
+            <label> Particles: 
+                <span id="particle-amount">0</span>
+            </label>
+            
+            <input type="text" id="particle-control" >
+            
+            <label class="intensity"> Intensity: 
+                <span id="intensity">0</span>
+            </label>
+            
+            <input type="text" id="intensity-control" >
+            
         </div>
     </body> 
 </html>
