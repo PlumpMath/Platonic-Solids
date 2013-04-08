@@ -14,9 +14,6 @@
 var camera, scene, renderer;                // see THREE.js documentation
 
 var geo_container, sphere, platonic;        // main geometric objects
-
-var WINDOW_HALF_X=window.innerWidth / 2,    // important for maintaining aspect ratio
-    WINDOW_HALF_Y=window.innerHeight / 2;   
     
 var rotation_matrix=new THREE.Matrix4(),    // performs the rotation when on mouse drag
     SENSITIVITY=0.005;                      // change this to adjust drag/rotation sensitivity

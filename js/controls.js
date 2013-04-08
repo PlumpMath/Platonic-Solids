@@ -6,6 +6,9 @@
  * this file contains the camera controller and event handlers
  */
 
+var ONE_BUTTON=49;      // key codes for the onkeydown handler
+var TWO_BUTTON=50;
+ 
 // function to control the sliders (jQuery)
 $( function(){
 
@@ -28,7 +31,7 @@ $( function(){
                 var val=MIN_PARTICLES + data.value*PARTICLE_RANGE;
             
                 while (val > shown_particles)
-                    shown_particles++
+                    shown_particles++;
                 
                 while (val < shown_particles)
                     platonic.geometry.vertices[--shown_particles].be_gone();
@@ -50,12 +53,12 @@ $( function(){
     
     $( '#background-button' ).on( 'click', 
         function(){
-            on_key_down( { keyCode : 49 } );
+            on_key_down( { keyCode : ONE_BUTTON } );
     });
     
     $( '#sphere-button' ).on( 'click', 
         function(){
-            on_key_down( { keyCode : 50 } );
+            on_key_down( { keyCode : TWO_BUTTON } );
     });
     
     // register the event listeners
@@ -77,15 +80,14 @@ function on_mouse_drag(){
     var axis=new THREE.Vector3().crossVectors(z_vec, drag_vec);
     var degrees=SENSITIVITY*drag_vec.length();
     rotation_matrix.identity();
-    if (drag_vec.length()>0){   // if length() returns 0, this will cause NaN's
+    if (drag_vec.length()>0)  // if length() returns 0, this will cause NaN's
         rotation_matrix.rotateByAxis( axis, degrees );
-    }
 }
 
 // maintain the aspect ratio on the resize event
 function on_window_resize() {  
-	WINDOW_HALF_X = window.innerWidth / 2;
-	WINDOW_HALF_Y = window.innerHeight / 2;
+	var window_half_x = window.innerWidth / 2;
+	var window_half_y = window.innerHeight / 2;
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -93,15 +95,21 @@ function on_window_resize() {
 
 // handles all key events and dishes out the work
 function on_key_down(event){
+
     switch( event.keyCode ){
-        case 49:    // 1 button
+    
+        case ONE_BUTTON:
             document.body.style.backgroundColor=
                 ( document.body.style.backgroundColor=='white' ) ? 'black' : 'white';
             break;
-        case 50:
+            
+        case TWO_BUTTON:
             sphere.visible=!sphere.visible;
+            
         default: 
             break;
+            
     }
+    
 }
 
