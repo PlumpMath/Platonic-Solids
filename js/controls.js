@@ -84,8 +84,8 @@ function on_mouse_drag(){
 
 // maintain the aspect ratio on the resize event
 function on_window_resize() {  
-	windowHalfX = window.innerWidth / 2;
-	windowHalfY = window.innerHeight / 2;
+	WINDOW_HALF_X = window.innerWidth / 2;
+	WINDOW_HALF_Y = window.innerHeight / 2;
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize( window.innerWidth, window.innerHeight );
