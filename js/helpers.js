@@ -6,13 +6,14 @@
  */
 
 
-THREE.Vector3.random=function(index){
+THREE.Vector3.random=function(distance, index){
     var vec=new THREE.Vector3(
-        Math.random()*RADIUS*4 - RADIUS*2,
-        Math.random()*RADIUS*4 - RADIUS*2,
-        Math.random()*RADIUS*4 - RADIUS*2
+        Math.random()*distance- distance/2,
+        Math.random()*distance - distance/2,
+        Math.random()*distance - distance/2
     );
-    vec.index=index;
+    if (index)
+        vec.index=index;
     return vec;
 }
 

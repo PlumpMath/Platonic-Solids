@@ -60,8 +60,7 @@ function init(){
         }) 
     );  
     
-    platonic=new THREE.ParticleSystem( new THREE.Geometry(),         // the container for our particles
-        new THREE.ParticleBasicMaterial ({                           // that we will manipulate later
+    var particle_material_opts = {
             wireframe:          true,
             size:               25,
             map:                THREE.ImageUtils.loadTexture(
@@ -70,9 +69,21 @@ function init(){
             blending:           THREE.AdditiveBlending  ,
             transparent:        true,
             depthWrite:		    false,
-            sizeAttenuation:    true
-        }) 
+    };
+    
+    platonic=new THREE.ParticleSystem( 
+        new THREE.Geometry(),         // the container for our particles
+        new THREE.ParticleBasicMaterial(
+            particle_material_opts
+        )
     );    
+    
+    particle_material_opts.map= THREE.ImageUtils.loadTexture(
+                                    "images/particle_gone.png"
+                                );
+    
+    var stars = create_background( particle_material_opts );
+
 
     /* fill up platonic with particles */
     init_platonic();
@@ -81,10 +92,10 @@ function init(){
     geo_container = new THREE.Object3D();  
     geo_container.add( sphere );
     geo_container.add( platonic );
+    geo_container.add( stars );
     
     /* add that container to the scene */
     scene.add( geo_container );
-    
     /* set up camera */
     camera.position.z = -RADIUS*2.5;
     camera.lookAt( scene.position );
@@ -114,7 +125,7 @@ function on_enter_frame(){
     platonic.geometry.verticesNeedUpdate=true;
     
     /* rotate the sphere */
-    sphere.rotation.y-=0.003;
+    geo_container.rotation.y-=0.003;
     
     
     /* let the renderer do its thing */
@@ -167,7 +178,7 @@ function update_position(particle, index){
 
 function init_platonic(){
     for (var i=0; i<MAX_PARTICLES; i++){
-        platonic.geometry.vertices.push( new THREE.Vector3.random(i) );
+        platonic.geometry.vertices.push( new THREE.Vector3.random(RADIUS*4, i) );
         if (i<shown_particles)
             platonic.geometry.vertices[i].show();
         else
@@ -175,5 +186,21 @@ function init_platonic(){
     }
 }
 
+function create_background(particle_material_opts){
 
+    var background=new THREE.ParticleSystem( 
+        new THREE.Geometry(),
+        new THREE.ParticleBasicMaterial(
+            particle_material_opts )
+    );
+    
+    var distance=RADIUS*10;
+    while ( background.geometry.vertices.length<1000 ){
+        var star = new THREE.Vector3.random( distance );
+        star.setLength( star.length() + distance );
+        background.geometry.vertices.push( star );
+    }
+    
+    return background;
+}
 
