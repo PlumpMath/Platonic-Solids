@@ -8,12 +8,12 @@
 * The controls file has (mostly) everything that deals with user interaction, including
 * how the sphere is rotated, and the onscreen slider.
 *
-* Note that this project uses the amazing three.js (https://github.com/mrdoob/three.js/)
+* This project uses the amazing three.js (https://github.com/mrdoob/three.js/)
 */
 
-var camera, scene, renderer;                // see THREE.js documentation
+var camera, scene, renderer;                // see three.js documentation
 
-var geo_container, sphere, platonic;        // main geometric objects
+var geo_container, sphere, platonic, stars; // main geometric objects
     
 var rotation_matrix=new THREE.Matrix4(),    // performs the rotation when on mouse drag
     SENSITIVITY=0.005;                      // change this to adjust drag/rotation sensitivity
@@ -30,7 +30,14 @@ var MIN_INTENSITY=0,                        // lowest force of particles
 
 // called after the controls are set up
 function onload(){
-    init();
+    try {
+        init();
+    } 
+    catch( error ) {
+        alert( 'Your browser does not support WebGL.' );
+        console.error( error );
+        return;
+    }
     on_enter_frame();
 }
 
@@ -43,60 +50,22 @@ function init(){
     renderer.setSize( window.innerWidth, window.innerHeight);    // sets the screen size
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
-    camera = new THREE.PerspectiveCamera(       // most common type of camera
-        60,                                     // field of view
-        window.innerWidth / window.innerHeight, // aspect ratio: always use this, or else it'll look squished
-        1,                                      // near clipping-plane: objects closer than this won't be rendered
-        10000                                   // far clipping-plane: objects further away won't be rendered
-    );
+    // create main objects
+    camera = create_camera();
+    platonic = create_platonic();  
+    stars = create_background();       
+    sphere = create_sphere();
     
-    sphere = new THREE.Mesh( new THREE.SphereGeometry(
-            RADIUS*.90,                                              // radius
-            20,                                                      // # of segments along width
-            20                                                       // # of segments along height
-        ), new THREE.MeshBasicMaterial ({                             // fill in the sphere with a material
-            color:              0x057d9f,
-            wireframe:          true
-        }) 
-    );  
-    
-    var particle_material_opts = {
-            wireframe:          true,
-            size:               25,
-            map:                THREE.ImageUtils.loadTexture(
-                                    "images/particle.png"
-                                ),
-            blending:           THREE.AdditiveBlending  ,
-            transparent:        true,
-            depthWrite:		    false,
-    };
-    
-    platonic=new THREE.ParticleSystem( 
-        new THREE.Geometry(),         // the container for our particles
-        new THREE.ParticleBasicMaterial(
-            particle_material_opts
-        )
-    );    
-    
-    particle_material_opts.map= THREE.ImageUtils.loadTexture(
-                                    "images/particle_gone.png"
-                                );
-    
-    var stars = create_background( particle_material_opts );
-
-
-    /* fill up platonic with particles */
-    init_platonic();
-
-    /* create a container for mouse drag rotations */
+    // create a container for mouse drag rotations
     geo_container = new THREE.Object3D();  
     geo_container.add( sphere );
     geo_container.add( platonic );
     geo_container.add( stars );
     
-    /* add that container to the scene */
+    // add that container to the scene
     scene.add( geo_container );
-    /* set up camera */
+    
+    // set up camera 
     camera.position.z = -RADIUS*2.5;
     camera.lookAt( scene.position );
 
@@ -107,28 +76,27 @@ function init(){
  */
 function on_enter_frame(){
 
-    /* request this function again for the next frame */
+    // request this function again for the next frame
     requestAnimationFrame( on_enter_frame );
     
-    /* rotate the sphere (see controls.js) */
+    // rotate the sphere (see controls.js)
     if (mouse.is_dragging){
         geo_container.applyMatrix( rotation_matrix );
         rotation_matrix.identity();
     }
     
-    /* animate those particles that need animating */
+    // animate those particles that need animating
     platonic.geometry.vertices
         .slice( 0, shown_particles )
         .forEach(update_position);
     
-    /* inform THREE.js that we've moved the particles */
+    // inform THREE.js that we've moved the particles
     platonic.geometry.verticesNeedUpdate=true;
     
-    /* rotate the sphere */
-    geo_container.rotation.y-=0.003;
+    // rotate the sphere
+    sphere.rotation.y-=0.003;
+    stars.rotation.y-=0.002;
     
-    
-    /* let the renderer do its thing */
     renderer.render( scene, camera );
 }
 
@@ -164,42 +132,62 @@ function update_position(particle, index){
     particle.show();
 }
 
+function create_platonic(particle_material_opts){
+    var geo=new THREE.ParticleSystem( 
+            new THREE.Geometry(),         // the container for our particles
+            new THREE.ParticleBasicMaterial({
+                wireframe:          true,
+                size:               25,
+                map:                THREE.ImageUtils.loadTexture(
+                                        "images/particle.png"
+                                    ),
+                blending:           THREE.AdditiveBlending,
+                transparent:        true,
+                depthWrite:		    false
+        })
+    );
+    
+    /* add all of the vertices now, because it is too costly
+    *  to add vertices dynamically, so is unsupported by three.js */
+    for (var i=0; i<MAX_PARTICLES; i++)
+        geo.geometry.vertices.push( new Particle( RADIUS*4 ) );
+    return geo;
+}
 
-/*
- * fills our platonic array with lots of particles
- *
- * Note the way this is working:
- * I am adding the maximum amount of vertices to our platonic geometry now,
- * because vertices added during runtime are very costly. So, the ones that
- * are not shown are simply moved off screen and are not interacted with by 
- * other vertices.
- *
- */
-
-function init_platonic(){
-    for (var i=0; i<MAX_PARTICLES; i++){
-        platonic.geometry.vertices.push( new THREE.Vector3.random(RADIUS*4, i) );
-        if (i<shown_particles)
-            platonic.geometry.vertices[i].show();
-        else
-            platonic.geometry.vertices[i].be_gone();
-    }
+function create_camera() {
+    return new THREE.PerspectiveCamera(         // most common type of camera
+        60,                                     // field of view
+        window.innerWidth / window.innerHeight, // aspect ratio: always use this, or else it'll look squished
+        1,                                      // near clipping-plane: objects closer than this won't be rendered
+        10000                                   // far clipping-plane: objects further away won't be rendered
+    );
+}
+ 
+function create_sphere(){
+    return new THREE.Mesh( new THREE.SphereGeometry(
+            RADIUS*.90,    // radius - slightly smaller so particles "float"
+            20,            // # of segments along width
+            20             // # of segments along height
+        ), new THREE.MeshBasicMaterial ({ 
+            color:              0x057d9f,
+            wireframe:          true
+        }) 
+    );  
 }
 
 function create_background(particle_material_opts){
-
     var background=new THREE.ParticleSystem( 
         new THREE.Geometry(),
-        new THREE.ParticleBasicMaterial(
-            particle_material_opts )
+        new THREE.ParticleBasicMaterial({
+            size:               10,
+            vertexColors:       THREE.vertexColors,
+            color:              0x6D4CFF
+        })
     );
     
     var distance=RADIUS*10;
-    while ( background.geometry.vertices.length<1000 ){
-        var star = new THREE.Vector3.random( distance );
-        star.setLength( star.length() + distance );
-        background.geometry.vertices.push( star );
-    }
+    for (var i=0; i<1000; i++)
+        background.geometry.vertices.push( new Star( distance ) );
     
     return background;
 }

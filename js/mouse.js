@@ -16,8 +16,9 @@ var mouse={
 };
     
 (function(){
-    var omd_event=new CustomEvent( 
-        "onmousedrag" );
+    var omd_event=document.createEvent( 'HTMLEvents' );
+    omd_event.initEvent( "onmousedrag", true, true );
+    
     function on_mouse_down(event){
         mouse.is_dragging=true,
         mouse.dx=event.clientX,
