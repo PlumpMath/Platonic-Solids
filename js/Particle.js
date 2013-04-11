@@ -2,21 +2,14 @@
  * Nick Sullivan
  * http://github.com/ncksllvn
  * Particle.js
- * extends RandomPoint to keep the points on the sphere
+ * extends Vector3 to generate random vertices
  */
-
-Particle.prototype = new RandomPoint();
  
+Particle.prototype = new THREE.Vector3();
+
 function Particle( distance ) {
-    RandomPoint.apply( this, [distance] );
-    this.distance=distance;
-    this.be_gone();
-}
-
-Particle.prototype.show=function(){
-    this.setLength( RADIUS );
-}
-
-Particle.prototype.be_gone=function(){
-    this.setLength( this.distance/30 );
+    var half=distance/2;
+    this.x = Math.random()*distance - half,
+    this.y = Math.random()*distance - half,
+    this.z = Math.random()*distance - half;
 }

@@ -12,31 +12,31 @@ var TWO_BUTTON=50;
 // function to control the sliders (jQuery)
 $( function(){
 
-    var particle_span=$( '#particle-amount' )
-        .html( shown_particles );
+    var particle_span=$( '#electron-amount' )
+        .html( shown_electrons );
         
     var intensity_span= $( '#intensity' )
         .html( intensity );
     
-    var PARTICLE_RANGE=MAX_PARTICLES-MIN_PARTICLES;
+    var ELECTRON_RANGE=MAX_ELECTRONS-MIN_ELECTRONS;
     
     var INTENSITY_RANGE=MAX_INTENSITY-MIN_INTENSITY;
     
-    $('#particle-control')
+    $('#electron-control')
         .simpleSlider()
-        .simpleSlider('setValue', (shown_particles-MIN_PARTICLES)/MAX_PARTICLES )
+        .simpleSlider('setValue', (shown_electrons-MIN_ELECTRONS)/MAX_ELECTRONS )
         .bind('slider:ready slider:changed',         
             function (event, data) {
             
-                var val=MIN_PARTICLES + data.value*PARTICLE_RANGE;
+                var val=MIN_ELECTRONS + data.value*ELECTRON_RANGE;
             
-                while (val > shown_particles)
-                    shown_particles++;
+                while (val > shown_electrons)
+                    shown_electrons++;
                 
-                while (val < shown_particles)
-                    platonic.geometry.vertices[--shown_particles].be_gone();
+                while (val < shown_electrons)
+                   electrons[--shown_electrons].sleep();
                     
-                 particle_span.html( shown_particles );
+                 particle_span.html( shown_electrons );
                  
     }); 
     

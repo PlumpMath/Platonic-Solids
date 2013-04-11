@@ -2,13 +2,13 @@
  * Nick Sullivan
  * http://github.com/ncksllvn
  * Star.js
- * extends RandomPoint to create a far off star
+ * extends Particle to create a far off star
  */
 
-Star.prototype = new RandomPoint();
+Star.prototype = new Particle();
 
 function Star( distance ) {
-    RandomPoint.apply( this, [distance] );
+    Particle.call( this, distance );
     this.setLength( this.length() +
         Math.random()*distance + distance/2 );
 }

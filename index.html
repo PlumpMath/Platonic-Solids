@@ -9,31 +9,39 @@
         <script src="js/vendor/jquery-1.9.1.min.js"></script>
         <script src="js/vendor/simple-slider.min.js"></script>
         <script src="js/vendor/three.min.js"></script>
+        
         <!-- creates mousedrag event -->
         <script src="js/mouse.js"></script>
+        
         <!-- defines and handles user interaction events -->
         <script src="js/controls.js"></script>
-        <!-- adds inverse method to Math -->
+        
+        <!-- defines the inverse method for the Math object -->
         <script src="js/helpers.js"></script>
+        
         <!-- defines the RandomPoint class -->
-        <script src="js/RandomPoint.js"></script>
+        <script src="js/Particle.js"></script>
+        
         <!-- defines the Star class -->
         <script src="js/Star.js"></script>
-        <!-- defines the Particle class -->
-        <script src="js/Particle.js"></script>
+        
+        <!-- defines the Electron class -->
+        <script src="js/Electron.js"></script>
+        
         <!-- the main file -->
         <script src="js/platonic.js"></script> 
+        
         <div id="slider">
         
             <input type="button" id="sphere-button" value="sphere" />
             
             <input type="button" id="background-button" value="background" />
             
-            <label> Particles: 
-                <span id="particle-amount">0</span>
+            <label> Electrons: 
+                <span id="electron-amount">0</span>
             </label>
             
-            <input type="text" id="particle-control" >
+            <input type="text" id="electron-control" >
             
             <label class="intensity"> Intensity: 
                 <span id="intensity">0</span>
