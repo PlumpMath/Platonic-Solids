@@ -47,6 +47,10 @@ $( function(){
             function (event, data) {
                 
                 intensity=parseInt( MIN_INTENSITY + data.value*INTENSITY_RANGE );
+                
+                star_rotation=0.00006 * intensity;
+                sphere_rotation=0.0001*intensity;
+                
                 intensity_span.html( intensity );
             
     });
@@ -65,7 +69,7 @@ $( function(){
     document.addEventListener( 'keydown', on_key_down, false );
     document.addEventListener( 'onmousedrag', on_mouse_drag, false );
     window.addEventListener( 'resize', on_window_resize, false ); 
-    onload();
+    main();
 });
 
 
@@ -99,10 +103,11 @@ function on_key_down(event){
     switch( event.keyCode ){
     
         case ONE_BUTTON:
-            document.body.style.backgroundColor=
-                ( document.body.style.backgroundColor=='white' ) ? 'black' : 'white';
-            break;
-            
+            if (renderer.getClearColor().r==0)
+                renderer.setClearColorHex( 0xcccccc, 1 );
+            else
+                renderer.setClearColorHex( 0x000000, 1 );  
+            break;            
         case TWO_BUTTON:
             sphere.visible=!sphere.visible;
             

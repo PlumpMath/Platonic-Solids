@@ -29,17 +29,19 @@ var MIN_INTENSITY=0,                        // lowest force of particles
     MAX_INTENSITY=600,                      // strongest force of particles
     intensity=30;                           // current speed of particles
 
+var star_rotation=0.00006 * intensity,
+    sphere_rotation=0.0001 * intensity;
+
 // called after the controls are set up
-function onload(){
+function main(){
     try {
         init();
+        on_enter_frame();
     } 
     catch( error ) {
-        alert( 'Your browser does not support WebGL.' );
-        console.error( error );
-        return;
+        $( '#no-support' ).show();
+        $( '#error' ).html( error );
     }
-    on_enter_frame();
 }
 
 /*
@@ -47,8 +49,9 @@ function onload(){
  */
 function init(){
     scene=new THREE.Scene();                                     // holds all geometry
-    renderer = new THREE.WebGLRenderer();                        // renders the scene
+    renderer = new THREE.WebGLRenderer({antialias:false});                        // renders the scene
     renderer.setSize( window.innerWidth, window.innerHeight);    // sets the screen size
+    renderer.setClearColorHex( 0x000000, 1 );                    // set background color of canvas
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
     
     // create main objects
@@ -89,14 +92,14 @@ function on_enter_frame(){
     // animate those particles that need animating
     electrons
         .slice( 0, shown_electrons )
-        .forEach(update_position);
+        .forEach( update_position );
     
     // inform three.js that we've moved the particles
     electron_system.verticesNeedUpdate=true;
     
     // rotate the sphere
-    sphere.rotation.y-=0.003;
-    stars.rotation.y-=0.002;
+    sphere.rotation.y-=sphere_rotation;
+    stars.rotation.y-=star_rotation;
     
     renderer.render( scene, camera );
 }

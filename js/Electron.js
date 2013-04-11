@@ -9,7 +9,6 @@ Electron.prototype = new Particle();
  
 function Electron( distance ) {
     Particle.call( this, distance );
-    this.distance=distance;
     this.sleep();
 }
 
@@ -39,5 +38,5 @@ Electron.prototype.stays_on_sphere=function(){
 }
 
 Electron.prototype.sleep=function(){
-    this.setLength( this.distance/30 );
+    this.setLength( RADIUS/15 );
 }
