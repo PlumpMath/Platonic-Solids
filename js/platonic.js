@@ -29,7 +29,7 @@ var MIN_INTENSITY=0,                        // lowest force of particles
     MAX_INTENSITY=600,                      // strongest force of particles
     intensity=30;                           // current speed of particles
 
-var star_rotation=0.00006 * intensity,
+var star_rotation=0.00006 * intensity,      // speed of rotations based on the intensity
     sphere_rotation=0.0001 * intensity;
 
 // called after the controls are set up
@@ -104,20 +104,19 @@ function on_enter_frame(){
     renderer.render( scene, camera );
 }
 
-/*
- * delegates the interaction of electrons to the electron class
- */
+/* Loops through the electrons array, having this indexed
+ * electron interact with those that have not already interacted
+ * with it, and are currently active on the sphere. */
 function update_position(electron, index){
     
-    // loop through all the electrons, applying their "push" to this electron
     electrons
         .slice( index, shown_electrons )
-        .forEach( function( other_elec ) {
-            electron.interact_with( other_elec );
-        });
+        .forEach( electron.interact_with, electron );
 
 }
 
+
+// initializers for the geometric objects -----------------------------
 function create_platonic(){
 
     electron_system = new THREE.Geometry();
@@ -136,9 +135,8 @@ function create_platonic(){
         })
     );
     
-    /* add all of the vertices now, because it is too costly
-    *  to add vertices dynamically, so is unsupported by three.js */
-    
+    // add all of the vertices now, because it is too costly
+    // to add vertices dynamically, so is unsupported by three.js     
     for (var i=0; i<MAX_ELECTRONS; i++)
         electrons.push( new Electron( RADIUS*4 ) );
         

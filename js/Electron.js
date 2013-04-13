@@ -40,3 +40,12 @@ Electron.prototype.stays_on_sphere=function(){
 Electron.prototype.sleep=function(){
     this.setLength( RADIUS/15 );
 }
+
+Electron.prototype.toString=function(){
+    return "Electron: ";
+}
+
+
+
+
+
