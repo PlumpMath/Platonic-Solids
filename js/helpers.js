@@ -10,3 +10,10 @@ Math.inverse=function( num ){
         return 0;
     return (1/num);
 }
+
+Function.prototype.extends=function( superClass ){
+    var F=function(){};
+    F.prototype=superClass.prototype;
+    this.prototype=new F();
+    this.prototype.constructor=this;
+}

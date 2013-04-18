@@ -5,7 +5,7 @@
  * extends Particle to create a far off star
  */
 
-Star.prototype = new Particle();
+Star.extends( Particle );
 
 function Star( distance ) {
     Particle.call( this, distance );

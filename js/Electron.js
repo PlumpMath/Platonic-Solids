@@ -5,7 +5,7 @@
  * extends Particle to keep the points on the sphere
  */
 
-Electron.prototype = new Particle();
+Electron.extends( Particle );
  
 function Electron( distance ) {
     Particle.call( this, distance );

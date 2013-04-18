@@ -39,6 +39,7 @@ function main(){
         on_enter_frame();
     } 
     catch( error ) {
+        $( '#slider' ).hide();
         $( '#no-support' ).show();
         $( '#error' ).html( error );
     }
