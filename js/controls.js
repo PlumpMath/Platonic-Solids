@@ -16,7 +16,9 @@ $( function(){
         .html( shown_electrons );
         
     var intensity_span= $( '#intensity' )
-        .html( intensity );
+        .html( parseInt(intensity*100) + '%' );
+        
+    var background_btn=$( '#background-button' );
     
     var ELECTRON_RANGE=MAX_ELECTRONS-MIN_ELECTRONS;
     
@@ -38,6 +40,8 @@ $( function(){
                     
                  particle_span.html( shown_electrons );
                  
+                 if ( background_btn.hasClass( 'show-bg' ) )
+                    background_btn.click();
     }); 
     
     $( '#intensity-control' )
@@ -46,18 +50,19 @@ $( function(){
         .bind('slider:ready slider:changed', 
             function (event, data) {
                 
-                intensity=parseInt( MIN_INTENSITY + data.value*INTENSITY_RANGE );
+                intensity= MIN_INTENSITY + data.value*INTENSITY_RANGE;
                 
                 star_rotation=0.00006 * intensity;
                 sphere_rotation=0.0001*intensity;
-                
-                intensity_span.html( intensity );
+                                
+                intensity_span.html( parseInt(intensity*100) + '%' );
             
     });
     
-    $( '#background-button' ).on( 'click', 
+    background_btn.on( 'click', 
         function(){
-            on_key_down( { keyCode : ONE_BUTTON } );
+            $(this).toggleClass( 'show-bg' );
+            draw_lines();
     });
     
     $( '#sphere-button' ).on( 'click', 
@@ -67,8 +72,8 @@ $( function(){
     
     // register the event listeners
     document.addEventListener( 'keydown', on_key_down, false );
-    document.addEventListener( 'onmousedrag', on_mouse_drag, false );
     window.addEventListener( 'resize', on_window_resize, false ); 
+    mouse['onmousedrag']=on_mouse_drag;
     main();
 });
 
@@ -110,7 +115,6 @@ function on_key_down(event){
             break;            
         case TWO_BUTTON:
             sphere.visible=!sphere.visible;
-            
         default: 
             break;
             

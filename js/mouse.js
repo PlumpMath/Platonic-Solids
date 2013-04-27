@@ -14,11 +14,11 @@ var mouse={
     dx: 0,
     dy: 0
 };
-    
+
+mouse.onmousedrag=function(){};
+
 (function(){
-    var omd_event=document.createEvent( 'HTMLEvents' );
-    omd_event.initEvent( "onmousedrag", true, true );
-    
+        
     function on_mouse_down(event){
         mouse.is_dragging=true,
         mouse.dx=event.clientX,
@@ -34,7 +34,7 @@ var mouse={
         if (mouse.is_dragging){
             mouse.dx=mouse.x - mouse.dx,
             mouse.dy=mouse.y - mouse.dy,
-            document.dispatchEvent( omd_event );
+            mouse.onmousedrag();
             mouse.dx=event.clientX,
             mouse.dy=event.clientY;
         }

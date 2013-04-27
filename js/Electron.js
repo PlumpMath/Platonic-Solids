@@ -9,28 +9,22 @@ Electron.extends( Particle );
  
 function Electron( distance ) {
     Particle.call( this, distance );
+    this.antigravity=new THREE.Vector3;
+    this.past=new THREE.Vector3;
+    this.velocity=0;
     this.sleep();
 }
 
-Electron.prototype.interact_with=function( other_electron ) {
+Electron.prototype.accumulate=function( other_electron ) {
 
-    var force = Math.inverse(
-            this.distanceToSquared( other_electron )
-            ) * intensity;
+    var force = Math.inverse( this.distanceToSquared( other_electron ) )* intensity;
 
     var other_electron_force = other_electron.clone()
         .multiplyScalar( force )
         .negate();
-
-    var this_electron_force = this.clone()
-        .multiplyScalar( force )
-        .negate();
-
-    other_electron.add( this_electron_force );
-    this.add( other_electron_force );
+        
+    this.antigravity.add( other_electron_force );
     
-    // move this electron back onto the sphere
-    this.stays_on_sphere();
 }
 
 Electron.prototype.stays_on_sphere=function(){
@@ -44,8 +38,6 @@ Electron.prototype.sleep=function(){
 Electron.prototype.toString=function(){
     return "Electron: ";
 }
-
-
 
 
 

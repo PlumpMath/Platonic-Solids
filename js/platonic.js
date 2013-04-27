@@ -11,26 +11,29 @@
 * This project uses the amazing three.js (https://github.com/mrdoob/three.js/)
 */
 
-var camera, scene, renderer;                // see three.js documentation
+var camera, scene, renderer, clock;                // see three.js documentation
 
-var geo_container, sphere,                  // main objects
+var geo_container, sphere, line,                  // main objects
     electron_system, electrons, stars;
     
-var rotation_matrix=new THREE.Matrix4(),    // performs the rotation when on mouse drag
-    SENSITIVITY=0.005;                      // change this to adjust drag/rotation sensitivity
+var rotation_matrix=new THREE.Matrix4();    // performs the rotation when on mouse drag
+const SENSITIVITY=0.005;                      // change this to adjust drag/rotation sensitivity
 
-var RADIUS=100;                             // the radius of the circle.
+const RADIUS=1;                             // the radius of the sphere.
 
-var MAX_ELECTRONS=20,                       // the maximum amount of electrons allowed on screen
-    MIN_ELECTRONS=0,                        // the minimum amount...
-    shown_electrons=3;                      // the number of electrons currently showing
+const MAX_ELECTRONS=20,                       // the maximum amount of electrons allowed on screen
+      MIN_ELECTRONS=0;                       // the minimum amount...
+var shown_electrons=3;                      // the number of electrons currently showing
     
-var MIN_INTENSITY=0,                        // lowest force of particles
-    MAX_INTENSITY=600,                      // strongest force of particles
-    intensity=30;                           // current speed of particles
+const MIN_INTENSITY=0,                        // lowest force of particles
+      MAX_INTENSITY=1;                        // strongest force of particles
+var intensity=.25;                           // current speed of particles
 
 var star_rotation=0.00006 * intensity,      // speed of rotations based on the intensity
     sphere_rotation=0.0001 * intensity;
+
+var freeze=false,
+    delta_T=0;
 
 // called after the controls are set up
 function main(){
@@ -49,8 +52,8 @@ function main(){
  * large function that does all of the necessary setting up for THREE.js
  */
 function init(){
-    scene=new THREE.Scene();                                     // holds all geometry
-    renderer = new THREE.WebGLRenderer({antialias:false});                        // renders the scene
+    scene=new THREE.Scene;                                     // holds all geometry
+    renderer = new THREE.WebGLRenderer;                        // renders the scene
     renderer.setSize( window.innerWidth, window.innerHeight);    // sets the screen size
     renderer.setClearColorHex( 0x000000, 1 );                    // set background color of canvas
     document.body.appendChild( renderer.domElement );            // appends the renderer - a <canvas> - to the scene
@@ -73,7 +76,8 @@ function init(){
     // set up camera 
     camera.position.z = -RADIUS*2.5;
     camera.lookAt( scene.position );
-
+    
+    clock=new THREE.Clock(true);
  }
 /* 
  * called every frame of animation
@@ -90,32 +94,95 @@ function on_enter_frame(){
         rotation_matrix.identity();
     }
     
-    // animate those particles that need animating
-    electrons
-        .slice( 0, shown_electrons )
-        .forEach( update_position );
+        // animate those particles that need animating
+        electrons
+            .slice( 0, shown_electrons )
+            .forEach( update_position );
+            
+        // inform three.js that we've moved the particles
+        electron_system.verticesNeedUpdate=true;
     
-    // inform three.js that we've moved the particles
-    electron_system.verticesNeedUpdate=true;
     
     // rotate the sphere
     sphere.rotation.y-=sphere_rotation;
     stars.rotation.y-=star_rotation;
     
+    // render the scene
     renderer.render( scene, camera );
 }
 
 /* Loops through the electrons array, having this indexed
  * electron interact with those that have not already interacted
- * with it, and are currently active on the sphere. */
+ * with it, and are currently active on the sphere. */ 
+ 
 function update_position(electron, index){
     
+    // initialize the antigravity force that will be applied to this electron
+    electron.antigravity.set( 0, 0, 0 );
+    
+    /* loop through all of the electrons, gathering the force they are applying
+       to this current electron in the electron's antigravity vector */
     electrons
-        .slice( index, shown_electrons )
-        .forEach( electron.interact_with, electron );
-
+        .slice( 0, shown_electrons )
+        .forEach( function(other_electron){
+            electron.accumulate( other_electron );
+        });
+    
+    electron.antigravity.sub(   
+        electron.clone().multiplyScalar( 
+            electron.dot( electron.antigravity ) 
+        ));
+       
+/*   electron.past = electron.clone();
+    passed_time=clock.getElapsedTime()-passed_time;
+    var delta_t = 1000000000000000000 * passed_time;
+    var delta_x = electron.distanceTo( electron.past );
+    electron.velocity = delta_x/delta_t;*/
+    
+    electron.add( electron.antigravity );
+    electron.normalize();
+    
 }
-
+/* 
+ * Draws the lines after the connect btn is clicked.
+ * It does so by finding the shortest distance from vertex[0]
+ * to any other vertex. We assume that this is approximately the
+ * length that each line we draw will be.
+ *
+ * This is not yet optimized!
+ */
+function draw_lines(){
+    freeze=!freeze;
+    if ( !freeze ) {
+        geo_container.remove( line );
+        return;
+    }
+    
+    var shortest_distance=100;
+    for ( var i=1; i<shown_electrons; i++ ){
+        var dist=electrons[0].distanceTo( electrons[i] );
+        if ( dist && dist < shortest_distance )
+            shortest_distance=dist;
+    }
+    shortest_distance=shortest_distance.toPrecision(6);
+    var geo = new THREE.Geometry();
+    
+    // add the vertices to the object according to the shortest distance
+    for ( var i=0; i<shown_electrons; i++ ){
+         for ( var w=(i+1); w<shown_electrons; w++ ){
+            if ( electrons[i].distanceTo( electrons[w] ).toPrecision(6) == shortest_distance ){
+                geo.vertices.push( electrons[i].clone() );
+                geo.vertices.push( electrons[w].clone() );
+            }
+         }
+    
+    }
+    var material = new THREE.LineBasicMaterial({
+        color: 0x0000ff
+    });
+    line = new THREE.Line(geo, material);
+    geo_container.add(line);
+}
 
 // initializers for the geometric objects -----------------------------
 function create_platonic(){
@@ -127,7 +194,7 @@ function create_platonic(){
             electron_system,
             new THREE.ParticleBasicMaterial({
                 wireframe:          true,
-                size:               25,
+                size:               RADIUS/4,
                 map:                THREE.ImageUtils.loadTexture(
                                         "images/particle.png" ),
                 blending:           THREE.AdditiveBlending,
@@ -169,7 +236,7 @@ function create_background(){
     var background=new THREE.ParticleSystem( 
         new THREE.Geometry(),
         new THREE.ParticleBasicMaterial({
-            size:               10,
+            size:               RADIUS/10,
             color:              0x6D4CFF
         })
     );

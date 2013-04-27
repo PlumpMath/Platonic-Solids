@@ -55,5 +55,9 @@ input[type="button"] {
     font-family: monospace;
     color: #ff0000;
 }
+input.show-bg {
+    background: #ccc;
+    color: #f00;
+}
 
 
