@@ -29,11 +29,11 @@ const MIN_INTENSITY=0,                        // lowest force of particles
       MAX_INTENSITY=1;                        // strongest force of particles
 var intensity=.25;                           // current speed of particles
 
-var star_rotation=0.00006 * intensity,      // speed of rotations based on the intensity
-    sphere_rotation=0.0001 * intensity;
+var star_rotation=0.02 * intensity,      // speed of rotations based on the intensity
+    sphere_rotation=0.01 * intensity;
 
 var freeze=false,
-    delta_T=0;
+    delta_t=2;
 
 // called after the controls are set up
 function main(){
@@ -120,34 +120,43 @@ function update_position(electron, index){
     // initialize the antigravity force that will be applied to this electron
     electron.antigravity.set( 0, 0, 0 );
     
-    /* loop through all of the electrons, gathering the force they are applying
-       to this current electron in the electron's antigravity vector */
+    // loop through all of the electrons, gathering the force they are applying
+    // to this current electron in the electron's antigravity vector 
     electrons
         .slice( 0, shown_electrons )
         .forEach( function(other_electron){
             electron.accumulate( other_electron );
         });
     
-    electron.antigravity.sub(   
+    // set the antigravity vector to the vector tangent to the sphere
+    electron.antigravity.sub(
         electron.clone().multiplyScalar( 
-            electron.dot( electron.antigravity ) 
+            electron.dot( electron.antigravity )
         ));
-       
-/*   electron.past = electron.clone();
-    passed_time=clock.getElapsedTime()-passed_time;
-    var delta_t = 1000000000000000000 * passed_time;
-    var delta_x = electron.distanceTo( electron.past );
-    electron.velocity = delta_x/delta_t;*/
     
-    electron.add( electron.antigravity );
-    electron.normalize();
+   
+    // calculate velocity
+    delta_t -= -clock.getElapsedTime();
+    var delta_x = electron.clone().sub( electron.old );
     
+    // add to the velocity vector the tangent of the newly calculated velocity
+    electron.velocity.add(
+        delta_x                     // change in position vector
+        .divideScalar( delta_t )    // divided by time
+        .sub( electron.clone()      // then calculate tangent vector
+            .multiplyScalar(
+                electron.dot( electron.velocity ) 
+            )
+        ) 
+     );
+   
+    electron.add( electron.velocity ).normalize();
+    electron.add( electron.antigravity ).normalize();
+   
+    electron.old=electron.clone();
 }
 /* 
  * Draws the lines after the connect btn is clicked.
- * It does so by finding the shortest distance from vertex[0]
- * to any other vertex. We assume that this is approximately the
- * length that each line we draw will be.
  *
  * This is not yet optimized!
  */
@@ -158,24 +167,20 @@ function draw_lines(){
         return;
     }
     
-    var shortest_distance=100;
-    for ( var i=1; i<shown_electrons; i++ ){
-        var dist=electrons[0].distanceTo( electrons[i] );
-        if ( dist && dist < shortest_distance )
-            shortest_distance=dist;
-    }
-    shortest_distance=shortest_distance.toPrecision(6);
+    var area = Math.PI * (RADIUS * RADIUS );
+    var shortest_distance=(area/(shown_electrons-1));
     var geo = new THREE.Geometry();
     
     // add the vertices to the object according to the shortest distance
     for ( var i=0; i<shown_electrons; i++ ){
          for ( var w=(i+1); w<shown_electrons; w++ ){
-            if ( electrons[i].distanceTo( electrons[w] ).toPrecision(6) == shortest_distance ){
+            var dist = electrons[i].distanceTo( electrons[w] );
+            if ( dist - shortest_distance < RADIUS ){
                 geo.vertices.push( electrons[i].clone() );
                 geo.vertices.push( electrons[w].clone() );
+                console.log( dist-shortest_distance );
             }
          }
-    
     }
     var material = new THREE.LineBasicMaterial({
         color: 0x0000ff

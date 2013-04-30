@@ -10,8 +10,8 @@ Electron.extends( Particle );
 function Electron( distance ) {
     Particle.call( this, distance );
     this.antigravity=new THREE.Vector3;
-    this.past=new THREE.Vector3;
-    this.velocity=0;
+    this.old=new THREE.Vector3;
+    this.velocity=new THREE.Vector3( this.x, this.y, this.z );
     this.sleep();
 }
 
@@ -26,9 +26,8 @@ Electron.prototype.accumulate=function( other_electron ) {
     this.antigravity.add( other_electron_force );
     
 }
-
-Electron.prototype.stays_on_sphere=function(){
-    this.setLength( RADIUS );
+Electron.prototype.show=function(){
+    this.velocity=new THREE.Vector3( this.x, this.y, this.z );
 }
 
 Electron.prototype.sleep=function(){
