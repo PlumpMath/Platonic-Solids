@@ -11,7 +11,7 @@ function Electron( distance ) {
     Particle.call( this, distance );
     this.antigravity=new THREE.Vector3;
     this.old=new THREE.Vector3;
-    this.velocity=new THREE.Vector3( this.x, this.y, this.z );
+    this.velocity=new THREE.Vector3;
     this.sleep();
 }
 
@@ -27,7 +27,7 @@ Electron.prototype.accumulate=function( other_electron ) {
     
 }
 Electron.prototype.show=function(){
-    this.velocity=new THREE.Vector3( this.x, this.y, this.z );
+    //this.velocity=new THREE.Vector3( this.x, this.y, this.z );
 }
 
 Electron.prototype.sleep=function(){

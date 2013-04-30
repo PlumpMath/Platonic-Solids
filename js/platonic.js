@@ -11,29 +11,29 @@
 * This project uses the amazing three.js (https://github.com/mrdoob/three.js/)
 */
 
-var camera, scene, renderer, clock;                // see three.js documentation
+var camera, scene, renderer, clock;         // see three.js documentation
 
-var geo_container, sphere, line,                  // main objects
+var geo_container, sphere, line,            // main objects
     electron_system, electrons, stars;
     
 var rotation_matrix=new THREE.Matrix4();    // performs the rotation when on mouse drag
-const SENSITIVITY=0.005;                      // change this to adjust drag/rotation sensitivity
+const SENSITIVITY=0.005;                    // change this to adjust drag/rotation sensitivity
 
 const RADIUS=1;                             // the radius of the sphere.
 
-const MAX_ELECTRONS=20,                       // the maximum amount of electrons allowed on screen
-      MIN_ELECTRONS=0;                       // the minimum amount...
+const MAX_ELECTRONS=20,                     // the maximum amount of electrons allowed on screen
+      MIN_ELECTRONS=0;                      // the minimum amount...
 var shown_electrons=3;                      // the number of electrons currently showing
     
-const MIN_INTENSITY=0,                        // lowest force of particles
-      MAX_INTENSITY=1;                        // strongest force of particles
-var intensity=.25;                           // current speed of particles
+const MIN_INTENSITY=0,                      // lowest force of particles
+      MAX_INTENSITY=1;                      // strongest force of particles
+var intensity=.25;                          // current speed of particles
 
-var star_rotation=0.02 * intensity,      // speed of rotations based on the intensity
+var star_rotation=0.02 * intensity,         // speed of rotations based on the intensity
     sphere_rotation=0.01 * intensity;
 
 var freeze=false,
-    delta_t=2;
+    dt=2;
 
 // called after the controls are set up
 function main(){
@@ -133,27 +133,22 @@ function update_position(electron, index){
         electron.clone().multiplyScalar( 
             electron.dot( electron.antigravity )
         ));
+        
     
-   
     // calculate velocity
-    delta_t -= -clock.getElapsedTime();
-    var delta_x = electron.clone().sub( electron.old );
+    dt -= -clock.getElapsedTime();
+    var dv = electron.antigravity.multiplyScalar( dt );
+    var vnew = electron.velocity.clone().add( dv );
+    //vnew.sub( electron.clone().multiplyScalar( electron.velocity.dot( electron ) ) ).normalize();
     
-    // add to the velocity vector the tangent of the newly calculated velocity
-    electron.velocity.add(
-        delta_x                     // change in position vector
-        .divideScalar( delta_t )    // divided by time
-        .sub( electron.clone()      // then calculate tangent vector
-            .multiplyScalar(
-                electron.dot( electron.velocity ) 
-            )
-        ) 
-     );
-   
-    electron.add( electron.velocity ).normalize();
-    electron.add( electron.antigravity ).normalize();
-   
-    electron.old=electron.clone();
+    var dx = vnew.clone().multiplyScalar( dt );
+    var xnew = electron.clone().add( dx );
+    xnew.normalize();
+    
+    //vnew.sub( electron.clone().multiplyScalar( electron.dot( vnew ) ) ).normalize();
+    
+    electron.set( xnew.x, xnew.y, xnew.z );
+    electron.velocity.set( vnew.x, vnew.y, vnew.z );
 }
 /* 
  * Draws the lines after the connect btn is clicked.
