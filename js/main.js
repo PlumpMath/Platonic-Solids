@@ -130,7 +130,7 @@ function update_position(electron, index){
     // to this current electron and store it in f
     electrons
         .slice( 0, shown_electrons )
-        .forEach( function(other_electron){
+        .forEach( function( other_electron ){
             f.accumulate_force_between( electron, other_electron );
     });
     
@@ -151,12 +151,14 @@ function update_position(electron, index){
     // update the electron to its new position
     // both the force vector and the velocity vector move it off the sphere, so normalize it
     electron.set( xnew.x, xnew.y, xnew.z ).normalize();
+    
+    var friction = 1/( 1 + last_time );
    
     // set vnew to be tangent to the sphere
     vnew.sub( 
         electron.clone().multiplyScalar( 
             electron.dot( vnew ) 
-    ));
+    )).multiplyScalar( friction ).normalize();
     
     // set its velocity for next time
     electron.velocity.set( vnew.x, vnew.y, vnew.z );
