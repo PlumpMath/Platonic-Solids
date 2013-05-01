@@ -26,7 +26,7 @@ const MAX_ELECTRONS=20,                     // the maximum amount of electrons a
 var shown_electrons=3;                      // the number of electrons currently showing
     
 const MIN_INTENSITY=0,                      // lowest force of particles
-      MAX_INTENSITY=2;                      // strongest force of particles
+      MAX_INTENSITY=6;                      // strongest force of particles
 var intensity=1;                            // current speed of particles
 
 const STAR_SPEED=0.005,
@@ -100,13 +100,13 @@ function on_enter_frame(){
         rotation_matrix.identity();
     }
     
-        // animate those particles that need animating
-        electrons
-            .slice( 0, shown_electrons )
-            .forEach( update_position );
-            
-        // inform three.js that we've moved the particles
-        electron_system.verticesNeedUpdate=true;
+    // animate those particles that need animating
+    electrons
+        .slice( 0, shown_electrons )
+        .forEach( update_position );
+        
+    // inform three.js that we've moved the particles
+    electron_system.verticesNeedUpdate=true;
     
     // rotate the sphere
     sphere.rotation.y-=sphere_rotation;

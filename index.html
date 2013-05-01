@@ -44,11 +44,21 @@
             <span id="error"></span>
         </div>
         
-        <div id="slider">
+        <div id="about">
+            <p>The orange lights represent electrons - each one pushing away from one another, but unable to leave the sphere.
+            As they push away and are pushed upon, they accumulate their own velocity, creating a neat show as
+            the electrons interact with one another.  At certain times, and with a certain amount of electrons, 
+            they will form a platonic solid. You can see what shape is being formed by pressing the "connect" button.
+            <a href="javascript:void(0)" 
+            onclick="document.body.removeChild( this.parentNode.parentNode )">Click here to close this box.</a>
+            </p>
+        </div>
         
+        <div id="slider">
+                
             <input type="button" id="background-button" value="Connect" />
         
-            <input type="button" id="sphere-button" value="sphere" />
+            <input type="button" id="sphere-button" value="Sphere" />
             
             <label> Electrons: 
                 <span id="electron-amount">0</span>
