@@ -6,8 +6,9 @@
  * this file contains the camera controller and event handlers
  */
 
-var ONE_BUTTON=49;      // key codes for the onkeydown handler
-var TWO_BUTTON=50;
+const ONE_BUTTON=49;      // key codes for the onkeydown handler
+const TWO_BUTTON=50;
+const ESCAPE_BUTTON=27;   // I enjoy a website that utilizes the escape button
  
 // function to control the sliders (jQuery)
 $( function(){
@@ -62,10 +63,11 @@ $( function(){
             
     });
     $( '.close' ).on( 'click', 
-        function(){
+        function(e){
             $( '#about' ).fadeOut( 250, function(){
                 $( '#about' ).remove();
             });
+        e.preventDefault();
     });
     
     background_btn.on( 'click', 
@@ -122,6 +124,10 @@ function on_key_down(event){
             break;            
         case TWO_BUTTON:
             sphere.visible=!sphere.visible;
+            break;
+        case ESCAPE_BUTTON:
+            if ( $( '.close' ).length )
+                $( '.close' ).click();
         default: 
             break;
             

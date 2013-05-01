@@ -121,7 +121,7 @@ function on_enter_frame(){
  * electron interact with those that have not already interacted
  * with it, and are currently active on the sphere. */ 
  
-function update_position(electron, index){
+function update_position( electron ){
     
     // initialize the force that will be applied to this electron
     var f = new ForceVector;
@@ -134,35 +134,33 @@ function update_position(electron, index){
             f.accumulate_force_between( electron, other_electron );
     });
     
-    // set the force vector to the vector tangent to the sphere
-    f.sub(
-        electron.clone().multiplyScalar( 
-            electron.dot( f )
-    ));
+    var fnew = new THREE.Vector3;
+    // set fnew to the force vector tangent to the sphere
+    fnew.subVectors( f, electron.clone().multiplyScalar( electron.dot( f ) ) );
+    fnew.multiplyScalar( intensity );
     
     // calculate the new velocity vector, vnew
-    var dv = f.multiplyScalar( dt );
+    var dv = fnew.clone().multiplyScalar( dt );
     var vnew = electron.velocity.clone().add( dv );
     
-    // calculate our electron's new vector, xnew
-    var dx = vnew.clone().multiplyScalar( dt );
-    var xnew = electron.clone().add( dx );
-    
-    // update the electron to its new position
-    // both the force vector and the velocity vector move it off the sphere, so normalize it
-    electron.set( xnew.x, xnew.y, xnew.z ).normalize();
-    
     // apply friction
-    var friction = 1/( 1 + last_time );
+    // var friction = last_time/( 1 + last_time );
    
     // set vnew to be tangent to the sphere
     vnew.sub( 
         electron.clone().multiplyScalar( 
             electron.dot( vnew ) 
-    )).multiplyScalar( friction ).normalize();
+    )).multiplyScalar( intensity );
+    
+    // calculate change in the electron's position
+    var dx = vnew.clone().multiplyScalar( dt );
+    
+    // update the electron to its new position
+    // both the force vector and the velocity vector move it off the sphere, so normalize it too
+    electron.add( dx ).normalize();
     
     // set its velocity for next time
-    electron.velocity.set( vnew.x, vnew.y, vnew.z );
+    electron.velocity.set( vnew.x, vnew.y, vnew.z ).normalize();
 }
 /* 
  * Draws the lines after the connect btn is clicked.

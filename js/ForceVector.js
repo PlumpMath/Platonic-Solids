@@ -17,7 +17,7 @@ ForceVector.prototype.accumulate_force_between =
     function( electron, other_electron ){
         
         // scale the strength based on distance to the other electron
-        var strength = Math.inverse( electron.distanceToSquared( other_electron ) ) * intensity;
+        var strength = Math.inverse( electron.distanceToSquared( other_electron ) );
         
         // now calculate the force vector
         var other_electron_force = other_electron.clone()
