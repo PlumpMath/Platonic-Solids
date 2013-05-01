@@ -146,11 +146,11 @@ function update_position( electron ){
     // apply friction
     // var friction = last_time/( 1 + last_time );
    
-    // set vnew to be tangent to the sphere
+    /* set vnew to be tangent to the sphere
     vnew.sub( 
         electron.clone().multiplyScalar( 
             electron.dot( vnew ) 
-    )).multiplyScalar( intensity );
+    )).multiplyScalar( intensity );*/
     
     // calculate change in the electron's position
     var dx = vnew.clone().multiplyScalar( dt );
