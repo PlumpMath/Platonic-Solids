@@ -32,9 +32,8 @@ $( function(){
             
                 var val=MIN_ELECTRONS + data.value*ELECTRON_RANGE;
             
-                while (val > shown_electrons){
-                    electrons[shown_electrons++].show();
-                }
+                while (val > shown_electrons)
+                    shown_electrons++
                 
                 while (val < shown_electrons)
                    electrons[--shown_electrons].sleep();
@@ -53,8 +52,8 @@ $( function(){
                 
                 intensity= MIN_INTENSITY + data.value*INTENSITY_RANGE;
                 
-                star_rotation=0.02 * intensity;
-                sphere_rotation=0.01*intensity;
+                star_rotation = STAR_SPEED * intensity;
+                sphere_rotation = SPHERE_SPEED*intensity;
                                 
                 intensity_span.html( parseInt(intensity*100) + '%' );
                 

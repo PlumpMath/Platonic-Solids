@@ -26,14 +26,18 @@ const MAX_ELECTRONS=20,                     // the maximum amount of electrons a
 var shown_electrons=3;                      // the number of electrons currently showing
     
 const MIN_INTENSITY=0,                      // lowest force of particles
-      MAX_INTENSITY=1;                      // strongest force of particles
-var intensity=.25;                          // current speed of particles
+      MAX_INTENSITY=2;                      // strongest force of particles
+var intensity=1;                            // current speed of particles
 
-var star_rotation=0.02 * intensity,         // speed of rotations based on the intensity
-    sphere_rotation=0.01 * intensity;
+const STAR_SPEED=0.005,
+    SPHERE_SPEED=0.005;
+    
+var star_rotation=STAR_SPEED * intensity,   // speed of rotations based on the intensity
+    sphere_rotation=SPHERE_SPEED * intensity;
 
-var freeze=false,
-    dt=2;
+var draw=false,
+    dt=0,
+    last_time=0;
 
 // called after the controls are set up
 function main(){
@@ -48,9 +52,7 @@ function main(){
     }
 }
 
-/*
- * large function that does all of the necessary setting up for THREE.js
- */
+/* large function that does all of the necessary setting up */
 function init(){
     scene=new THREE.Scene;                                     // holds all geometry
     renderer = new THREE.WebGLRenderer;                        // renders the scene
@@ -79,16 +81,20 @@ function init(){
     
     clock=new THREE.Clock(true);
  }
-/* 
- * called every frame of animation
- * tradition as3 name for the function called every frame (~60 fps)
- */
+ 
+/* called every frame of animation
+ * tradition as3 name for the function called every frame (~60 fps) */
+ 
 function on_enter_frame(){
-
+    
+    // how much time has passed since the last frame = dt
+    dt = clock.getElapsedTime() - last_time;
+    last_time=clock.getElapsedTime();
+    
     // request this function again for the next frame
     requestAnimationFrame( on_enter_frame );
     
-    // rotate the sphere (see controls.js)
+    // rotate the sphere according to a mouse drag
     if (mouse.is_dragging){
         geo_container.applyMatrix( rotation_matrix );
         rotation_matrix.identity();
@@ -102,13 +108,13 @@ function on_enter_frame(){
         // inform three.js that we've moved the particles
         electron_system.verticesNeedUpdate=true;
     
-    
     // rotate the sphere
     sphere.rotation.y-=sphere_rotation;
     stars.rotation.y-=star_rotation;
     
     // render the scene
     renderer.render( scene, camera );
+    
 }
 
 /* Loops through the electrons array, having this indexed
@@ -117,37 +123,42 @@ function on_enter_frame(){
  
 function update_position(electron, index){
     
-    // initialize the antigravity force that will be applied to this electron
-    electron.antigravity.set( 0, 0, 0 );
+    // initialize the force that will be applied to this electron
+    var f = new ForceVector;
     
     // loop through all of the electrons, gathering the force they are applying
-    // to this current electron in the electron's antigravity vector 
+    // to this current electron and store it in f
     electrons
         .slice( 0, shown_electrons )
         .forEach( function(other_electron){
-            electron.accumulate( other_electron );
-        });
+            f.accumulate_force_between( electron, other_electron );
+    });
     
-    // set the antigravity vector to the vector tangent to the sphere
-    electron.antigravity.sub(
+    // set the force vector to the vector tangent to the sphere
+    f.sub(
         electron.clone().multiplyScalar( 
-            electron.dot( electron.antigravity )
-        ));
-        
+            electron.dot( f )
+    ));
     
-    // calculate velocity
-    dt -= -clock.getElapsedTime();
-    var dv = electron.antigravity.multiplyScalar( dt );
+    // calculate the new velocity vector, vnew
+    var dv = f.multiplyScalar( dt );
     var vnew = electron.velocity.clone().add( dv );
-    //vnew.sub( electron.clone().multiplyScalar( electron.velocity.dot( electron ) ) ).normalize();
     
+    // calculate our electron's new vector, xnew
     var dx = vnew.clone().multiplyScalar( dt );
     var xnew = electron.clone().add( dx );
-    xnew.normalize();
     
-    //vnew.sub( electron.clone().multiplyScalar( electron.dot( vnew ) ) ).normalize();
+    // update the electron to its new position
+    // both the force vector and the velocity vector move it off the sphere, so normalize it
+    electron.set( xnew.x, xnew.y, xnew.z ).normalize();
+   
+    // set vnew to be tangent to the sphere
+    vnew.sub( 
+        electron.clone().multiplyScalar( 
+            electron.dot( vnew ) 
+    ));
     
-    electron.set( xnew.x, xnew.y, xnew.z );
+    // set its velocity for next time
     electron.velocity.set( vnew.x, vnew.y, vnew.z );
 }
 /* 
@@ -156,24 +167,24 @@ function update_position(electron, index){
  * This is not yet optimized!
  */
 function draw_lines(){
-    freeze=!freeze;
-    if ( !freeze ) {
+    draw=!draw;
+    if ( !draw ) {
         geo_container.remove( line );
         return;
     }
     
     var area = Math.PI * (RADIUS * RADIUS );
-    var shortest_distance=(area/(shown_electrons-1));
+    var min_distance = (area/shown_electrons);
     var geo = new THREE.Geometry();
     
-    // add the vertices to the object according to the shortest distance
+    // add the vertices to the object if their distance to one another 
+    // is roughly equal to min_distance
     for ( var i=0; i<shown_electrons; i++ ){
          for ( var w=(i+1); w<shown_electrons; w++ ){
             var dist = electrons[i].distanceTo( electrons[w] );
-            if ( dist - shortest_distance < RADIUS ){
+            if ( dist - min_distance < RADIUS ){
                 geo.vertices.push( electrons[i].clone() );
                 geo.vertices.push( electrons[w].clone() );
-                console.log( dist-shortest_distance );
             }
          }
     }
