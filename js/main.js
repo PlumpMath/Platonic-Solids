@@ -142,7 +142,6 @@ function update_position( electron ){
     fnew.multiplyScalar( intensity );
     
     // calculate the new velocity vector, vnew
-    // var dv = fnew.clone().multiplyScalar( dt );
     var vnew = electron.velocity.clone().add( fnew );
     
     // apply friction
