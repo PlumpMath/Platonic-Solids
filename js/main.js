@@ -37,7 +37,8 @@ var star_rotation=STAR_SPEED * intensity,   // speed of rotations based on the i
 
 var draw=false,
     dt=0,
-    last_time=0;
+    last_time=0,
+    friction_factor=0;
 
 // called after the controls are set up
 function main(){
@@ -90,6 +91,7 @@ function on_enter_frame(){
     // how much time has passed since the last frame = dt
     dt = clock.getElapsedTime() - last_time;
     last_time=clock.getElapsedTime();
+    friction_factor += dt;
     
     // request this function again for the next frame
     requestAnimationFrame( on_enter_frame );
@@ -144,13 +146,13 @@ function update_position( electron ){
     var vnew = electron.velocity.clone().add( fnew );
     
     // apply friction
-    // var friction = last_time/( 1 + last_time );
+    var friction = 1/( 1 + friction_factor );
    
     // set vnew to be tangent to the sphere
     vnew.sub( 
         electron.clone().multiplyScalar( 
             electron.dot( vnew ) 
-    )).multiplyScalar( intensity );
+    )).multiplyScalar( friction*intensity );
     
     // calculate change in the electron's position
     var dx = vnew.clone().multiplyScalar( dt );

@@ -30,7 +30,9 @@ $( function(){
         .simpleSlider('setValue', (shown_electrons-MIN_ELECTRONS)/MAX_ELECTRONS )
         .bind('slider:ready slider:changed',         
             function (event, data) {
-            
+                
+                friction_factor=0;
+                
                 var val=MIN_ELECTRONS + data.value*ELECTRON_RANGE;
             
                 while (val > shown_electrons)
