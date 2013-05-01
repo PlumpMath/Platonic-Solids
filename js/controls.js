@@ -61,6 +61,12 @@ $( function(){
                     background_btn.click();
             
     });
+    $( '.close' ).on( 'click', 
+        function(){
+            $( '#about' ).fadeOut( 250, function(){
+                $( '#about' ).remove();
+            });
+    });
     
     background_btn.on( 'click', 
         function(){
@@ -107,9 +113,7 @@ function on_window_resize() {
 
 // handles all key events and dishes out the work
 function on_key_down(event){
-
     switch( event.keyCode ){
-    
         case ONE_BUTTON:
             if (renderer.getClearColor().r==0)
                 renderer.setClearColorHex( 0xcccccc, 1 );

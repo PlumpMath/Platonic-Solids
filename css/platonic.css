@@ -69,7 +69,14 @@ input.show-bg {
     padding: 15px 1%;
     cursor: text;
 }
-
+#about p{
+    margin: 0;
+}
+.close{
+    text-align: center;
+    width: 100%;
+    display: block;
+}
 
 
 

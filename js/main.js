@@ -152,6 +152,7 @@ function update_position(electron, index){
     // both the force vector and the velocity vector move it off the sphere, so normalize it
     electron.set( xnew.x, xnew.y, xnew.z ).normalize();
     
+    // apply friction
     var friction = 1/( 1 + last_time );
    
     // set vnew to be tangent to the sphere
