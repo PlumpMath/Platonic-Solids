@@ -1,6 +1,7 @@
 Platonic Solids
 -------------------------
-An experiment created with [three.js](http://mrdoob.github.io/three.js/).  
+An experiment created with [three.js](http://mrdoob.github.io/three.js/).
+Thank you to [Dr. Andy Long](http://www.nku.edu/~longa/) for helping me so much with the mathematics!
 
 Concept
 -------------------------
@@ -20,7 +21,9 @@ other electrons as far away as possible. Since all electrons will be thinking th
 other electrons; I want to get as far away from there as possible" ), all of the electrons will then be the
 same distance away from each other. If they are not, then one electron will be too close to it, so it'll adjust,
 and possibly keep adjusting until it settles that if it moves in any direction, it'll be too close to some other
-electron, so it has to stay put - Electrons dislike all other electrons equally.  
+electron, so it has to stay put - Electrons dislike all other electrons equally. Once the electrons have evenly
+spaced out, an interesting shape may form, such as a [platonic solid](http://en.wikipedia.org/wiki/Platonic_solid)
+if there are a certain amount of electrons (4, 6, 8, 12, or 20.) Click the connect button to see what shape is formed.
 
 There are between 0 and 20 electrons at any time, which the user can adjust. Users can also adjust a magical
 factor called "Intensity." Both the force that each electron feels from other electrons as well
