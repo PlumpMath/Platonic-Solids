@@ -26,7 +26,7 @@ const MAX_ELECTRONS=20,                     // the maximum amount of electrons a
 var shown_electrons=3;                      // the number of electrons currently showing
     
 const MIN_INTENSITY=0,                      // lowest force of particles
-      MAX_INTENSITY=6;                      // strongest force of particles
+      MAX_INTENSITY=2;                      // strongest force of particles
 var intensity=1;                            // current speed of particles
 
 const STAR_SPEED=0.005,
@@ -140,17 +140,17 @@ function update_position( electron ){
     fnew.multiplyScalar( intensity );
     
     // calculate the new velocity vector, vnew
-    var dv = fnew.clone().multiplyScalar( dt );
-    var vnew = electron.velocity.clone().add( dv );
+    // var dv = fnew.clone().multiplyScalar( dt );
+    var vnew = electron.velocity.clone().add( fnew );
     
     // apply friction
     // var friction = last_time/( 1 + last_time );
    
-    /* set vnew to be tangent to the sphere
+    // set vnew to be tangent to the sphere
     vnew.sub( 
         electron.clone().multiplyScalar( 
             electron.dot( vnew ) 
-    )).multiplyScalar( intensity );*/
+    )).multiplyScalar( intensity );
     
     // calculate change in the electron's position
     var dx = vnew.clone().multiplyScalar( dt );
