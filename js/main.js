@@ -43,9 +43,9 @@ var draw=false,
 // called after the controls are set up
 function main(){
     try {
+        init();
         $( '#no-support' ).hide();
         $( '#slider' ).show();
-        init();
         on_enter_frame();
     } 
     catch( error ) {
