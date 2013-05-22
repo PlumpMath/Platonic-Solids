@@ -20,6 +20,7 @@ body {
     border-radius: 15px;
     background: rgba( 255, 255, 255, 0.5 );
     padding: 1% 1%;
+    display: none;
 }
 label {
     font-size: 11pt;
@@ -37,7 +38,6 @@ input[type="button"] {
     border: none;
 }
 #no-support {
-  display: none;
   padding: 0 30%;
   position: absolute;
   text-align: center;

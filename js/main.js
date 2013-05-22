@@ -43,12 +43,12 @@ var draw=false,
 // called after the controls are set up
 function main(){
     try {
+        $( '#no-support' ).hide();
+        $( '#slider' ).show();
         init();
         on_enter_frame();
     } 
     catch( error ) {
-        $( '#slider' ).hide();
-        $( '#no-support' ).show();
         $( '#error' ).html( error );
     }
 }
